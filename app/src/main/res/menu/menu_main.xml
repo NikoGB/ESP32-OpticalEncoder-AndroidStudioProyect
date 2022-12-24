@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.finalencoder_controller.MainActivity">
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="Ajustes"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_allDevices"
+        android:orderInCategory="100"
+        android:title="Ver todos los dispositivos"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="100"
+        android:title="Acerca de"
+        app:showAsAction="never" />
+</menu>

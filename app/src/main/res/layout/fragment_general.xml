@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GeneralFragment">
+
+    <ScrollView
+        android:id="@+id/main_scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="0dp"
+        android:contentDescription="main_scroll"
+        android:nestedScrollingEnabled="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/main_VerticalScrollLayaout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center|top"
+            android:orientation="vertical">
+
+
+            <ImageView
+                android:id="@+id/connection_imageView"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="48dp"
+                android:background="@android:drawable/ic_menu_mylocation"
+                android:contentDescription="ConectionState"
+                android:src="@android:drawable/ic_menu_mylocation"
+                android:stateListAnimator="@android:anim/bounce_interpolator"
+                android:tintMode="multiply"
+                app:tint="@color/purple_700" />
+
+            <TextView
+                android:id="@+id/connection_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:fontFamily="sans-serif-black"
+                android:text="Desconectado"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="24sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/connection_imageView" />
+
+            <LinearLayout
+                android:id="@+id/statusConnection_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/connection_textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Dispositivo:"
+                    android:textAlignment="center"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.3"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/connection_textView" />
+
+                <TextView
+                    android:id="@+id/connectionDeviceName_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Ninguno"
+                    android:textAlignment="center"
+                    android:textSize="20sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.11"
+                    app:layout_constraintStart_toEndOf="@+id/connection_textView2"
+                    app:layout_constraintTop_toBottomOf="@+id/connection_textView" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider_muestreoUp"
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="?android:attr/listDivider"
+                android:backgroundTint="#C8C8C8"
+                android:backgroundTintMode="add"
+                android:layout_marginTop="24dp" />
+
+            <LinearLayout
+                android:id="@+id/switchScan_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/connection_textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="30dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Estado muestreo"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/scanState_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:enabled="false"
+                    android:minHeight="52dp"
+                    android:scaleX="1.5"
+                    android:scaleY="1.5" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/divider_muestreoDown"
+                android:layout_width="wrap_content"
+                android:layout_height="2dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="?android:attr/listDivider"
+                android:backgroundTint="#C8C8C8"
+                android:backgroundTintMode="add"
+                android:layout_marginTop="9dp" />
+
+            <LinearLayout
+                android:id="@+id/TimeScan_Layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="32dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/divider5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="2dp"
+                    android:background="?android:attr/listDivider"
+                    android:backgroundTint="#C8C8C8"
+                    android:backgroundTintMode="add"
+                    android:layout_marginStart="26dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/timeScaner_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="clip_horizontal|center_horizontal"
+                    android:layout_marginTop="6dp"
+                    android:layout_weight="0"
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center"
+                    android:text="Temporizador"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <View
+                    android:id="@+id/divider6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="2dp"
+                    android:background="?android:attr/listDivider"
+                    android:backgroundTint="#C8C8C8"
+                    android:backgroundTintMode="add"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginEnd="26dp"
+                    android:layout_weight="1" />
+
+                <View
+                    android:id="@+id/time_divider"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="2dp"
+                    android:layout_gravity="end"
+
+                    android:layout_marginStart="26dp"
+                    android:layout_marginEnd="26dp"
+                    android:background="?android:attr/listDivider"
+                    android:backgroundTint="#C8C8C8"
+                    android:backgroundTintMode="add"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <TableLayout
+                android:id="@+id/Temporizaor_tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TableRow
+                    android:id="@+id/temporizador_row1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/timeScan_textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Rango de tiempo:"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <EditText
+                        android:id="@+id/editTextTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="18dp"
+                        android:ems="6"
+                        android:hint="Seleccionar"
+                        android:inputType="time"
+                        android:textAlignment="center" />
+
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/temporizador_row2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:gravity="center"
+                    android:visibility="visible">
+
+                    <Button
+                        android:id="@+id/temporizador_button_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:background="@android:drawable/progress_horizontal"
+                        android:text="Iniciar"
+                        app:icon="@android:drawable/ic_media_play"
+                        app:iconPadding="0dp" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/temporizador_row3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/timeLeftScan_textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="60dp"
+                        android:background="@android:drawable/editbox_background_normal"
+                        android:backgroundTint="#E6E6E6"
+                        android:fontFamily="sans-serif-medium"
+                        android:gravity="center"
+                        android:text="02:03:12"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="24sp" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/temporizador_row4"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="18dp"
+                    android:gravity="center"
+                    android:visibility="gone">
+
+                    <Button
+                        android:id="@+id/temporizador_buttonStop"
+                        android:layout_width="150dp"
+                        android:layout_height="50dp"
+                        android:background="@android:drawable/progress_horizontal"
+                        android:backgroundTintMode="src_over"
+                        android:text="Detener"
+                        app:icon="@android:drawable/editbox_dropdown_light_frame"
+                        app:iconSize="24dp" />
+                </TableRow>
+
+            </TableLayout>
+
+            <View
+                android:id="@+id/divider_muestreoDown2"
+                android:layout_width="wrap_content"
+                android:background="?android:attr/listDivider"
+                android:backgroundTint="#C8C8C8"
+                android:backgroundTintMode="add"
+
+                android:layout_height="2dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="24dp"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:id="@+id/GraphSpikes_Layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="32dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/connection_textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_marginStart="28dp"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Datos recopilados"
+                    android:textSize="20sp" />
+
+                <View
+                    android:id="@+id/divider2"
+                    android:layout_width="wrap_content"
+                    android:background="?android:attr/listDivider"
+                    android:backgroundTint="#C8C8C8"
+                    android:backgroundTintMode="add"
+                    android:layout_height="2dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="10dp" />
+            </LinearLayout>
+
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/spikes_GraphView"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="20dp"
+                android:backgroundTint="#535353"
+                android:foregroundTint="#92F6A3"
+                android:nestedScrollingEnabled="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/divider_muestreoDown" />
+
+            <LinearLayout
+                android:id="@+id/GraphDistance_Layaout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="28dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/connection_textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_marginStart="28dp"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Data filtrada"
+                    android:textSize="20sp" />
+
+                <View
+                    android:id="@+id/divider3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="2dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="?android:attr/listDivider"
+                    android:backgroundTint="#C8C8C8"
+                    android:backgroundTintMode="add" />
+            </LinearLayout>
+
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/distance_GraphView"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="60dp"
+                android:backgroundTint="#535353"
+                android:foregroundTint="#92F6A3"
+                android:nestedScrollingEnabled="true"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/divider_muestreoDown" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="50dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
