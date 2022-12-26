@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/ContentMainFragment">
+
+    <fragment
+        android:id="@+id/ContentMainFragment"
+        android:name="com.example.finalencoder_controller.MainContentFragment"
+        android:label="@string/first_fragment_label"
+        tools:layout="@layout/content_main" >
+        <action
+            android:id="@+id/action_ContentMainFragment_to_debuggingConsoleFragment"
+            app:destination="@id/debuggingConsoleFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_ContentMainFragment_to_scheduleCreateFragment"
+            app:destination="@id/scheduleCreateFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_ContentMainFragment_to_dataSelectorFragment"
+            app:destination="@id/dataSelectorFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_ContentMainFragment_to_showDataPointsFragment"
+            app:destination="@id/showDataPointsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/debuggingConsoleFragment"
+        android:name="com.example.finalencoder_controller.DebuggingConsoleFragment"
+        android:label="debugging_console"
+        tools:layout="@layout/debugging_console" >
+        <action
+            android:id="@+id/action_debuggingConsoleFragment_to_ContentMainFragment"
+            app:destination="@id/ContentMainFragment"
+            app:exitAnim="@anim/nav_default_enter_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/scheduleCreateFragment"
+        android:name="com.example.finalencoder_controller.ScheduleCreateFragment"
+        android:label="schedule_create_menu"
+        tools:layout="@layout/schedule_create_menu" >
+        <action
+            android:id="@+id/action_scheduleCreateFragment_to_ContentMainFragment"
+            app:destination="@id/ContentMainFragment"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/dataSelectorFragment"
+        android:name="com.example.finalencoder_controller.DataSelectorFragment"
+        android:label="fragment_data_selection"
+        tools:layout="@layout/fragment_data_selection" >
+        <action
+            android:id="@+id/action_dataSelectorFragment_to_ContentMainFragment"
+            app:destination="@id/ContentMainFragment"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/action_dataSelectorFragment_to_dataSchedulerFragment"
+            app:destination="@id/dataSchedulerFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/dataSchedulerFragment"
+        android:name="com.example.finalencoder_controller.DataSchedulerFragment"
+        android:label="fragment_deviceview_scheduler"
+        tools:layout="@layout/fragment_deviceview_scheduler" >
+        <action
+            android:id="@+id/action_dataSchedulerFragment_to_dataSelectorFragment"
+            app:destination="@id/dataSelectorFragment"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/action_dataSchedulerFragment_to_showDataPointsFragment"
+            app:destination="@id/showDataPointsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/showDataPointsFragment"
+        android:name="com.example.finalencoder_controller.ShowDataPointsFragment"
+        android:label="fragment_show_data_points"
+        tools:layout="@layout/fragment_show_data_points" >
+        <action
+            android:id="@+id/action_showDataPointsFragment_to_ContentMainFragment"
+            app:destination="@id/ContentMainFragment"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/action_showDataPointsFragment_to_dataSchedulerFragment"
+            app:destination="@id/dataSchedulerFragment"
+            app:exitAnim="@anim/nav_default_exit_anim" />
+    </fragment>
+</navigation>
