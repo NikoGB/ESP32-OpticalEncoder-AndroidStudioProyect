@@ -164,7 +164,7 @@ public class ControlCenter {
         SchedulerFragment.ScheduleItem.DateType dat = new SchedulerFragment.ScheduleItem.DateType(read.substring(i + 1, read.indexOf(";", i + 1)));
 
         //it saves it a txt file with the name of the device
-        //to save points could be like, when ON; is sended if accepted, there should first add a START;scheduleIfExist;startDate;intervalMs;measureUnit
+        //to save points could be like, when ON; is sended if accepted, there should first add a START;scheduleNameIfExist;startDate;intervalMs;measureUnit
         //And at the end there should be a STOP;endDate and saved on every line a diferent one maybe
         //check the last date of point saved and verify that the new ones are not repeating meaning it always should be
         //a later date
