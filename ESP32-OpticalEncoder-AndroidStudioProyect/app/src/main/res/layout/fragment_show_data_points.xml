@@ -31,10 +31,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="12dp"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="sans-serif-black"
             android:gravity="center"
-            android:text="Agendamiento 1"
-            android:textColor="@color/black"
+            android:text="@string/agendamiento_1"
+            android:textColor="@color/teal_700"
             android:textSize="28sp" />
 
         <TextView
@@ -45,6 +45,7 @@
             android:layout_marginTop="6dp"
             android:fontFamily="sans-serif-medium"
             android:text="Tiempo de inicio:"
+            android:textColor="@color/teal_500"
             android:textSize="20sp" />
 
         <TextView
@@ -55,7 +56,7 @@
             android:layout_marginTop="6dp"
             android:fontFamily="sans-serif-medium"
             android:text="2022/12/01  14:13:50.000"
-            android:textColor="@color/black"
+
             android:textSize="20sp" />
 
         <TextView
@@ -66,6 +67,7 @@
             android:layout_marginTop="6dp"
             android:fontFamily="sans-serif-medium"
             android:text="Tiempo de termino:"
+            android:textColor="@color/teal_500"
             android:textSize="20sp" />
 
         <TextView
@@ -76,7 +78,7 @@
             android:layout_marginTop="6dp"
             android:fontFamily="sans-serif-medium"
             android:text="2022/12/01  14:13:50.000"
-            android:textColor="@color/black"
+
             android:textSize="20sp" />
 
         <TextView
@@ -87,6 +89,7 @@
             android:layout_marginTop="22dp"
             android:fontFamily="sans-serif-medium"
             android:text="Intervalo de muestreo:"
+            android:textColor="@color/teal_500"
             android:textSize="20sp" />
 
         <TextView
@@ -97,7 +100,7 @@
             android:layout_marginTop="6dp"
             android:fontFamily="sans-serif-medium"
             android:text="100 ms"
-            android:textColor="@color/black"
+
             android:textSize="20sp" />
 
         <TextView
@@ -108,6 +111,7 @@
             android:layout_marginTop="12dp"
             android:fontFamily="sans-serif-medium"
             android:text="Unidad de medida:"
+            android:textColor="@color/teal_500"
             android:textSize="20sp" />
 
         <TextView
@@ -118,7 +122,7 @@
             android:layout_marginTop="6dp"
             android:fontFamily="sans-serif-medium"
             android:text="cm"
-            android:textColor="@color/black"
+
             android:textSize="20sp" />
 
         <LinearLayout
@@ -137,6 +141,7 @@
                 android:layout_marginTop="6dp"
                 android:fontFamily="sans-serif-medium"
                 android:text="Data"
+                android:textColor="@color/teal_700"
                 android:textSize="20sp" />
 
             <View

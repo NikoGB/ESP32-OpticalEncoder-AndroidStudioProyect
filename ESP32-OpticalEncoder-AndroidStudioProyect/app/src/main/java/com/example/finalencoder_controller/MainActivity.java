@@ -1,6 +1,11 @@
 package com.example.finalencoder_controller;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.example.finalencoder_controller.databinding.ActivityMainBinding;
@@ -15,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.service.controls.Control;
 import android.view.View;
 
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -54,13 +60,33 @@ public class MainActivity extends AppCompatActivity {
 
         // set the toolbar as the app bar
         setSupportActionBar(binding.toolbar);
+        ActionBar actionBar = getSupportActionBar();
         // add the main activity to the control center
         ControlCenter.getInstance().mainActivity = this;
         // set the title of the toolbar
         tittle = "Experimento de muestreo";
+        // ocultamos la action bar para tener mas espacio en pantalla
+        actionBar.hide();
+
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
         NavController navController = navHostFragment.getNavController();
+
+        // Obteniendo el acceso al bluetooth a penas se carga la app para evitar crasheos
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)!= PackageManager.PERMISSION_GRANTED){
+            if (Build.VERSION.SDK_INT>=31){
+                ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.BLUETOOTH_CONNECT},100);
+            }
+        }
+        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.BLUETOOTH)!= PackageManager.PERMISSION_GRANTED){
+            if(Build.VERSION.SDK_INT>=31){
+                ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.BLUETOOTH},100);
+            }
+
+        }
+        // ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.BLUETOOTH_CONNECT},100);
+        startActivity(enableBtIntent);
 
         // Add an OnDestinationChangedListener to the NavController to keep track of the current destination
         // and to update the action bar.

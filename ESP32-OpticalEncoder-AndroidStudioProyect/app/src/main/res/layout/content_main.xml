@@ -6,16 +6,28 @@
     android:layout_height="match_parent"
     tools:context=".MainContentFragment">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:id="@+id/mainViewContainer">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/mainViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="48dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintBottom_toTopOf="@+id/appBarLayout"
+            tools:layout_editor_absoluteX="16dp" />
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/Theme.FInalEncoder_Controller.AppBarOverlay">
+            android:layout_alignBottom="@+id/mainViewPager"
+            android:theme="@style/Theme.FInalEncoder_Controller.AppBarOverlay"
+            app:layout_constraintBottom_toBottomOf="@+id/mainViewContainer">
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/main_tabLayout"
@@ -25,26 +37,20 @@
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="General" />
+                    android:text="@string/general" />
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Graficos" />
+                    android:text="@string/graficos" />
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ajustes" />
+                    android:text="@string/ajustes" />
             </com.google.android.material.tabs.TabLayout>
 
         </com.google.android.material.appbar.AppBarLayout>
-
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/mainViewPager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

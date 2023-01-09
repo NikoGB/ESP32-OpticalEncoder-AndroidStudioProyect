@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -60,45 +61,40 @@ public class GeneralFragment extends Fragment {
 
         @Override
         public void run() {
-            //Get the values from the text box and convert them to ints
-            int minutes = Integer.parseInt(vals[0]);
-            int seconds = Integer.parseInt(vals[1]);
-            int milliseconds = Integer.parseInt(vals[2]);
+            try{
+                int minutes = Integer.parseInt(vals[0]);
+                int seconds = Integer.parseInt(vals[1]);
+                int milliseconds = Integer.parseInt(vals[2]);
 
-            //Loop until the thread is interrupted
-            while (true){
-                //Sleep for 100 milliseconds
-                Thread.sleep(100);
+                while (true){
+                    Thread.sleep(100);
 
-                //Decrement the milliseconds by 100
-                milliseconds-=100;
-                //If the milliseconds are less than 0, reset it to 900
-                if(milliseconds == -100){
-                    milliseconds = 900;
-                    //Decrement the seconds by 1
-                    seconds -= 1;
+                    milliseconds-=100;
+                    if(milliseconds == -100){
+                        milliseconds = 900;
+                        seconds -= 1;
 
-                    //If the seconds are less than 0, reset it to 59
-                    if(seconds == -1){
-                        seconds = 59;
-                        //Decrement the minutes by 1
-                        minutes -= 1;
+                        if(seconds == -1){
+                            seconds = 59;
+                            minutes -= 1;
 
-                        //If the minutes are less than 0, run the onFinish function and interrupt the thread
-                        if(minutes == -1){
-                            onFinish.run();
-                            Thread.currentThread().interrupt();
-                            return;
+                            if(minutes == -1){
+                                onFinish.run();
+                                Thread.currentThread().interrupt();
+                                return;
+                            }
                         }
                     }
+                    DecimalFormat dF = new DecimalFormat("00");
+
+
+                    String tDisp = dF.format(minutes) + ":" + dF.format(seconds) + "." + new DecimalFormat("000").format(milliseconds);
+                    ControlCenter.getInstance().mainActivity.onUIThread(()-> tempT.setText(tDisp));
                 }
 
-                //Format the numbers to be displayed properly
-                DecimalFormat dF = new DecimalFormat("00");
-                String tDisp = dF.format(minutes) + ":" + dF.format(seconds) + "." + new DecimalFormat("000").format(milliseconds);
-
-                //Run the given function on the UI thread
-                ControlCenter.getInstance().mainActivity.onUIThread(()-> tempT.setText(tDisp));
+            }catch(InterruptedException e){
+                Thread.currentThread().interrupt();
+                return;
             }
         }
     }
@@ -163,30 +159,37 @@ public class GeneralFragment extends Fragment {
 
         // set the onClickListener for the start button
         binding.temporizadorButtonStart.setOnClickListener( view -> {
-            // send the command to start the timer
-            ControlCenter.getInstance().connectionFrag.sendCommand("ON;" + rsTime, () -> {
-                // set the temp state to true
-                setTempState(true);
-                // create a new thread to hold the countdown timer
-                countDown = new Thread(
-                        // create a new tempRoutine object to hold the countdown timer
-                        new tempRoutine(rsTime, ()-> {
-                            // set the temp state to false
-                            setTempState(false);
-                            // interrupt the thread holding the countdown timer to stop it from running in the background after the timer is done
-                            ControlCenter.getInstance().mainActivity.onUIThread(()-> binding.scanStateSwitch.setChecked(false));
-                        }, binding.timeLeftScanTextView)
-                );
-                // start the countdown timer
-                countDown.start();
-                // set the isSendingScan to true
-                ControlCenter.getInstance().isSendingScan = true;
-                // disable the switch
-                binding.scanStateSwitch.setChecked(true);
-                // set the switch to be disabled
-                binding.scanStateSwitch.setEnabled(false);
-            }, 10000);
-        } );
+            // si no esta conectado mandar un mensaje solicitando la conexion
+            if(!ControlCenter.getInstance().connectedDevice){
+                Toast.makeText(getContext(),"Debes estar conectado para usar esta funcion",Toast.LENGTH_LONG).show();
+                return;
+            }
+                // send the command to start the timer
+                ControlCenter.getInstance().connectionFrag.sendCommand("ON;" + rsTime, () -> {
+                    // set the temp state to true
+                    setTempState(true);
+                    // create a new thread to hold the countdown timer
+                    countDown = new Thread(
+                            // create a new tempRoutine object to hold the countdown timer
+                            new tempRoutine(rsTime, () -> {
+                                // set the temp state to false
+                                setTempState(false);
+                                // interrupt the thread holding the countdown timer to stop it from running in the background after the timer is done
+                                ControlCenter.getInstance().mainActivity.onUIThread(() -> binding.scanStateSwitch.setChecked(false));
+                            }, binding.timeLeftScanTextView)
+                    );
+                    // start the countdown timer
+                    countDown.start();
+                    // set the isSendingScan to true
+                    ControlCenter.getInstance().isSendingScan = true;
+                    // disable the switch
+                    binding.scanStateSwitch.setChecked(true);
+                    // set the switch to be disabled
+                    binding.scanStateSwitch.setEnabled(false);
+
+                }, 10000);
+
+        });
         // set the onClickListener for the stop button
         binding.temporizadorButtonStop.setOnClickListener( view -> {
             // send the command to stop the timer and turn off the scan
@@ -206,6 +209,7 @@ public class GeneralFragment extends Fragment {
 
         // set the onCheckedChangedListener for the switch
         binding.scanStateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
             
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -303,7 +307,7 @@ public class GeneralFragment extends Fragment {
             @Override
             public void draw(Canvas canvas, Paint paint, float x, float y, DataPointInterface dataPoint) {
                 // create a new paint object with the color of the text
-                Paint paint = new Paint();
+
                 // set the color to the color of the text
                 paint.setColor(getResources().getColor(android.R.color.holo_red_dark));
                 // set the stroke width

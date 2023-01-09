@@ -27,26 +27,28 @@
 
             <ImageView
                 android:id="@+id/connection_imageView"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_marginTop="48dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="120dp"
                 android:background="@android:drawable/ic_menu_mylocation"
-                android:contentDescription="ConectionState"
+                android:contentDescription="@string/conectionstate"
                 android:src="@android:drawable/ic_menu_mylocation"
                 android:stateListAnimator="@android:anim/bounce_interpolator"
                 android:tintMode="multiply"
-                app:tint="@color/purple_700" />
+                app:tint="@color/teal_700" />
 
             <TextView
                 android:id="@+id/connection_textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginStart="-50dp"
+                android:layout_marginTop="-80dp"
                 android:fontFamily="sans-serif-black"
-                android:text="Desconectado"
+                android:text="@string/desconectado"
                 android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="24sp"
+                android:textColor="@color/teal_700"
+                android:textSize="28sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/connection_imageView" />
@@ -55,7 +57,8 @@
                 android:id="@+id/statusConnection_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginStart="-50dp">
 
                 <TextView
                     android:id="@+id/connection_textView2"
@@ -63,7 +66,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:fontFamily="sans-serif-medium"
-                    android:text="Dispositivo:"
+                    android:text="@string/dispositivo"
                     android:textAlignment="center"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -103,7 +106,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                >
 
                 <TextView
                     android:id="@+id/connection_textView4"
@@ -112,10 +116,10 @@
                     android:layout_marginTop="5dp"
                     android:layout_marginEnd="30dp"
                     android:fontFamily="sans-serif-medium"
-                    android:text="Estado muestreo"
+                    android:text="@string/estado_muestreo"
                     android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textColor="@color/teal_700"
+                    android:textSize="28sp" />
 
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/scanState_switch"
@@ -143,7 +147,7 @@
                 android:id="@+id/TimeScan_Layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="12dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
@@ -167,9 +171,9 @@
                     android:layout_weight="0"
                     android:fontFamily="sans-serif-black"
                     android:gravity="center"
-                    android:text="Temporizador"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:text="@string/temporizador"
+                    android:textColor="@color/teal_700"
+                    android:textSize="28sp" />
 
                 <View
                     android:id="@+id/divider6"
@@ -201,7 +205,8 @@
             <TableLayout
                 android:id="@+id/Temporizaor_tabLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                >
 
                 <TableRow
                     android:id="@+id/temporizador_row1"
@@ -216,9 +221,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-medium"
-                        android:text="Rango de tiempo:"
+                        android:text="@string/duraci_n"
                         android:textAlignment="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/teal_700"
                         android:textSize="18sp" />
 
                     <EditText
@@ -227,7 +232,7 @@
                         android:layout_height="48dp"
                         android:layout_marginStart="18dp"
                         android:ems="6"
-                        android:hint="Seleccionar"
+                        android:hint="@string/seleccionar"
                         android:inputType="time"
                         android:textAlignment="center" />
 
@@ -237,7 +242,7 @@
                     android:id="@+id/temporizador_row2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="12dp"
                     android:layout_marginBottom="20dp"
                     android:gravity="center"
                     android:visibility="visible">
@@ -246,10 +251,12 @@
                         android:id="@+id/temporizador_button_start"
                         android:layout_width="wrap_content"
                         android:layout_height="50dp"
-                        android:background="@android:drawable/progress_horizontal"
+
+                        android:backgroundTint="@color/teal_200"
                         android:text="Iniciar"
                         app:icon="@android:drawable/ic_media_play"
-                        app:iconPadding="0dp" />
+                        app:iconPadding="0dp"
+                        app:iconTint="@color/white" />
                 </TableRow>
 
                 <TableRow
@@ -304,7 +311,7 @@
 
                 android:layout_height="2dp"
                 android:layout_marginStart="24dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="12dp"
                 android:layout_marginEnd="24dp"
                 android:layout_weight="1" />
 
@@ -322,9 +329,10 @@
                     android:layout_gravity="start"
                     android:layout_marginStart="28dp"
                     android:layout_marginTop="6dp"
+                    android:textColor="@color/teal_700"
                     android:fontFamily="sans-serif-medium"
                     android:text="Datos recopilados"
-                    android:textSize="20sp" />
+                    android:textSize="28sp" />
 
                 <View
                     android:id="@+id/divider2"
@@ -334,7 +342,7 @@
                     android:backgroundTintMode="add"
                     android:layout_height="2dp"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginEnd="10dp" />
             </LinearLayout>
 

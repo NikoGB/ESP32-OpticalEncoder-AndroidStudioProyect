@@ -11,4 +11,19 @@
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="buscar">Buscar</string>
+    <string name="general">General</string>
+    <string name="graficos">Graficos</string>
+    <string name="ajustes">Ajustes</string>
+    <string name="en_espera">En espera</string>
+    <string name="desconectado">Desconectado</string>
+    <string name="conectionstate">ConectionState</string>
+    <string name="dispositivo">Dispositivo:</string>
+    <string name="estado_muestreo">Estado muestreo</string>
+    <string name="temporizador">Temporizador</string>
+    <string name="seleccionar">Seleccionar</string>
+    <string name="rango_de_tiempo">Rango de tiempo:</string>
+    <string name="duraci_n">Duración</string>
+    <string name="muestreo_1">Muestreo 1</string>
+    <string name="agendar">Agendar</string>
+    <string name="agendamiento_1">Agendamiento 1</string>
 </resources>

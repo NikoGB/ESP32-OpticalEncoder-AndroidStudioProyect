@@ -31,6 +31,7 @@
             android:layout_marginEnd="12dp"
             android:fontFamily="sans-serif-black"
             android:text=":"
+            android:textColor="@color/teal_700"
             android:textAlignment="center"
             android:textSize="28sp"
             android:visibility="gone" />
@@ -51,6 +52,7 @@
             android:layout_marginEnd="12dp"
             android:fontFamily="sans-serif-black"
             android:text=":"
+
             android:textAlignment="center"
             android:textSize="28sp"
             android:visibility="gone" />
@@ -71,6 +73,7 @@
             android:layout_marginEnd="12dp"
             android:fontFamily="sans-serif-black"
             android:text="."
+
             android:textAlignment="center"
             android:textSize="28sp"
             android:visibility="gone" />

@@ -70,27 +70,22 @@ public class ControlCenter {
     }
 
     public void setDeviceConnected(boolean state, String name){
-        // This method is called when the connection state changes
-        // It will be called every time the connection state changes from connected to disconnected or vice versa
-        public void connectionStateChanged(boolean state, String name){
-            // Send the connection state to the GeneralFragment
-            generalFrag.deviceConnected(state);
-            // If the device is connected, request the data points and schedules from the device
-            if(state){
-                // Request the data points
-                connectionFrag.requestInfo("SCAN;GET;",
-                    // If the data points are received successfully, save the data points and request the schedules
+        connectedDevice = state;
+        if(state){
+            generalFrag.deviceConnected(name);
+
+            connectionFrag.requestInfo("SCAN;GET;",
                     ()->{ saveData(getDateCheckedDataPoints(lastReceivedMsg), "data_", true);
-                        // Request the schedules
+
                         connectionFrag.requestInfo("SCHEDULE;GET;",
-                            // If the schedules are received successfully, save the schedules and disconnect the device
-                            ()-> saveData(getCheckedCreatedSchedules(lastReceivedMsg), "schedules_", false),
-                                // If the schedules are not received successfully, disconnect the device
+                                ()-> saveData(getCheckedCreatedSchedules(lastReceivedMsg), "schedules_", false),
                                 ()-> connectionFrag.disconnectDevice(), 10000);
-                    },
-                    // If the data points are not received successfully, disconnect the device
-                    ()-> connectionFrag.disconnectDevice(), 10000);
-            }
+
+                    },()-> connectionFrag.disconnectDevice(), 10000);
+
+        }else{
+            lastSentMsg = ""; lastReceivedMsg = "";
+            generalFrag.deviceDisconnected();
         }
     }
 

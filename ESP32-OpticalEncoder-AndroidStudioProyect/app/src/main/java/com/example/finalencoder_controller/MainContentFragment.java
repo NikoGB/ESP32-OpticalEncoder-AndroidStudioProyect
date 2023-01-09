@@ -52,27 +52,7 @@ public class MainContentFragment extends Fragment {
     }
 
 
-    
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
-        // Inflate the layout for this fragment
-        binding = ContentMainBinding.inflate(inflater, container, false);
 
-        ControlCenter.getInstance().mainContent = this;
-        TabLayout tabLayout = binding.mainTabLayout;
-        mainViewPag = binding.mainViewPager;
-
-        // Set the adapter for the ViewPager
-        mainViewPag.setAdapter(new FragmentAdapter(ControlCenter.getInstance().mainActivity));
-        // Disables swiping between tabs
-        mainViewPag.setUserInputEnabled(false);
-
-        // Attach the TabLayout to the ViewPager
-        new TabLayoutMediator(tabLayout, mainViewPag, (tab, position) -> {
-            tab.setText((position == 0 ? "General" : position == 1 ? "Agendar" : "Conexion"));
-        }).attach();
-
-        return binding.getRoot();
-    }
 
     // Class that will be used to create the fragments
     class FragmentAdapter extends FragmentStateAdapter {

@@ -39,9 +39,20 @@
                         android:fontFamily="sans-serif-black"
                         android:gravity="center_vertical"
                         android:paddingLeft="32dp"
-                        android:text="En espera"
+                        android:text="@string/en_espera"
+                        android:textColor="@color/teal_700"
                         android:textAlignment="gravity"
                         android:textSize="24sp" />
+                    <View
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="2dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:background="?android:attr/listDivider"
+                        android:backgroundTint="#C8C8C8"
+                        android:backgroundTintMode="add"
+                        android:layout_marginTop="9dp" />
 
                     <ListView
                         android:id="@+id/deviceView_awaitSchedule_listView"
@@ -68,8 +79,19 @@
                         android:gravity="center_vertical"
                         android:paddingLeft="32dp"
                         android:text="Terminados"
+                        android:textColor="@color/teal_700"
                         android:textAlignment="gravity"
                         android:textSize="24sp" />
+                    <View
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="2dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:background="?android:attr/listDivider"
+                        android:backgroundTint="#C8C8C8"
+                        android:backgroundTintMode="add"
+                        android:layout_marginTop="9dp" />
 
                     <ListView
                         android:id="@+id/deviceView_dueSchedule_listView"

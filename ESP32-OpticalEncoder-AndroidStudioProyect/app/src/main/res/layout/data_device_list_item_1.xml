@@ -30,7 +30,7 @@
                     android:fontFamily="sans-serif-medium"
                     android:paddingStart="20dp"
                     android:text="ESP32"
-                    android:textColor="@color/black"
+                    android:textColor="@color/teal_700"
                     android:textSize="24sp" />
 
                 <TextView
@@ -55,7 +55,7 @@
                 android:scaleType="fitCenter"
                 android:src="?android:attr/actionModeFindDrawable"
                 android:tintMode="multiply"
-                app:tint="@color/green" />
+                app:tint="@color/teal_200" />
 
             <ImageButton
                 android:id="@+id/dataDevice_interactItem_viewSchedules"
@@ -69,7 +69,7 @@
                 android:scaleType="fitCenter"
                 android:src="@android:drawable/ic_lock_idle_alarm"
                 android:tintMode="multiply"
-                app:tint="@color/purple_700" />
+                app:tint="@color/purple_200" />
 
         </TableRow>
 
