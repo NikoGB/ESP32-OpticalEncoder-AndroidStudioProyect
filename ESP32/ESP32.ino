@@ -365,7 +365,8 @@ int readBT(String nFile)
     }
     file.close();
     // cambiar la wea de abajo por el protocolo de la app
-    SerialBT.println("#FINISH;");
+    // TODO: probar esta wea, hay que poner el * todo el rato
+    SerialBT.println("*");
     return 1;
 }
 /* 5.- FUNCIONES DE LA LOGICA DEL ESP32 */
@@ -526,6 +527,7 @@ int loadSchedule()
             // se asigna la fecha y hora de fin del agendamiento a la fecha y hora de fin del siguiente agendamiento
             endNextSchedule = newEndSchedule;
         }
+        // TODO: no se si va el - en el substring pero si va el done (ese lo puse manual)
         // se elimina el agendamiento del string
         schedule = schedule.substring(schedule.indexOf("-DONE;") + 6, schedule.length());
     }
@@ -611,7 +613,7 @@ void loop()
         enAgendamiento = true;
         // se manda un mensaje por bluetooth para indicar que se inicio el agendamiento (no estoy seguro sobre el c_str())
         // TODO: cambiar el mensaje por uno mas claro para la app
-        SerialBT.println(dat);
+        SerialBT.println(dat+'*');*
     }
     // si estamos en un temporizador se ejecuta el siguiente código
     if (isTimer)

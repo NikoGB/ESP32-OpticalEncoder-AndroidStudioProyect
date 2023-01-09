@@ -25,3 +25,9 @@
   6. listo
   7. listo (256 bytes segun la IA) (funcion readBT)
 */
+
+/*
+  Todo:
+  1. ahora la app espera al * para contar como si el mensaje termino
+      por lo hay que poner el * al final de cada SerialBT.println(...+'*');
+*/

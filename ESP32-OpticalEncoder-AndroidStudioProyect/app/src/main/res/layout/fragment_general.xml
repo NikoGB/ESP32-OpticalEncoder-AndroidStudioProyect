@@ -84,6 +84,7 @@
                     android:text="Ninguno"
                     android:textAlignment="center"
                     android:textSize="20sp"
+
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.11"
                     app:layout_constraintStart_toEndOf="@+id/connection_textView2"

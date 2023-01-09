@@ -34,6 +34,7 @@ import io.reactivex.schedulers.Schedulers;
 public class ConnectionFragment extends Fragment {
 
     // variables for the bluetooth connection and the device interface
+    private String completeMsg = "";
     public String devName = "", devMac = "";
     private FragmentConnectionBinding binding;
     private BluetoothManager bluetoothManager = null;
@@ -137,11 +138,25 @@ public class ConnectionFragment extends Fragment {
         devAdapter.notifyDataSetChanged();
     }
 
-    // method called when a message is received
+    // TODO: modificar el receiveMsg para esperar a que termine de recibir el ultimo mensaje que termina con "*"
+    // metodo usado para definir el mensaje
     private void receiveMsg(String s) {
-        ControlCenter.getInstance().setReceivedMessage(s);
-
+        // si encuentra el '*' quiere decir que es la ultima parte del mensaje
+        // Toast.makeText(getContext(), "mensaje entrante:"+s,Toast.LENGTH_LONG).show();
+        if(s.lastIndexOf('*')!=-1){
+            completeMsg+=s;
+            //Toast.makeText(getContext(), "mensaje Final:"+completeMsg,Toast.LENGTH_LONG).show();
+            ControlCenter.getInstance().setReceivedMessage(completeMsg.substring(0,completeMsg.lastIndexOf('*')));
+            //Toast.makeText(getContext(), "mensaje Final post asig:"+completeMsg.substring(0,completeMsg.lastIndexOf('*')),Toast.LENGTH_LONG).show();
+            // se limpia el completeMsg para recibir el sgt
+            completeMsg="";
+            return;
+        }
+        // si no es porque el mensaje esta incompleto y sumamos el contenido al anterior
+        completeMsg+=s;
+        //Toast.makeText(getContext(), "Sin mensaje final: "+completeMsg,Toast.LENGTH_LONG).show();
     }
+
     // method called when a message is sent
     private void sentMsg(String s) {
         ControlCenter.getInstance().setSentMessage(s);
