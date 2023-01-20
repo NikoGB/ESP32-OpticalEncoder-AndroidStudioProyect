@@ -1,7 +1,9 @@
 package com.example.finalencoder_controller;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -59,7 +61,7 @@ public class ConnectionFragment extends Fragment {
             // check if the bluetooth manager is null
             if (bluetoothManager == null) {
                 // show a toast message and return
-                Toast.makeText(getContext(), "El Bluetooth no esta abilitado.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "El Bluetooth no esta habilitado.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -138,18 +140,36 @@ public class ConnectionFragment extends Fragment {
         devAdapter.notifyDataSetChanged();
     }
 
-    // TODO: modificar el receiveMsg para esperar a que termine de recibir el ultimo mensaje que termina con "*"
     // metodo usado para definir el mensaje
     private void receiveMsg(String s) {
         // si encuentra el '*' quiere decir que es la ultima parte del mensaje
-        // Toast.makeText(getContext(), "mensaje entrante:"+s,Toast.LENGTH_LONG).show();
-        if(s.lastIndexOf('*')!=-1){
+//        Toast.makeText(getContext(), "mensaje entrante:"+s,Toast.LENGTH_LONG).show();
+        if(s.contains("*")){
             completeMsg+=s;
+            // si existe un error en los datos se el mensaje contendra un #
+            if (completeMsg.contains("#")){
+                // si lo tiene se borra para que no interfiera con el resto de las funciones y se notifica al usuario
+                completeMsg=completeMsg.replace("#","");
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle("ADVERTENCIA: ");
+                builder.setMessage("Se interrumpio indebidamente el muestreo, los contenidos de estos no pueden estar completos.");
+                builder.setNeutralButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
             //Toast.makeText(getContext(), "mensaje Final:"+completeMsg,Toast.LENGTH_LONG).show();
+//            ControlCenter.getInstance().mainActivity.makeSnackB("Mensaje final: "+completeMsg.substring(0,completeMsg.lastIndexOf('*')));
             ControlCenter.getInstance().setReceivedMessage(completeMsg.substring(0,completeMsg.lastIndexOf('*')));
             //Toast.makeText(getContext(), "mensaje Final post asig:"+completeMsg.substring(0,completeMsg.lastIndexOf('*')),Toast.LENGTH_LONG).show();
             // se limpia el completeMsg para recibir el sgt
             completeMsg="";
+
             return;
         }
         // si no es porque el mensaje esta incompleto y sumamos el contenido al anterior

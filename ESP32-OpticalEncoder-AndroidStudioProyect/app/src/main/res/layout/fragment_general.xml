@@ -82,6 +82,7 @@
                     android:layout_marginTop="6dp"
                     android:fontFamily="sans-serif-medium"
                     android:text="Ninguno"
+                    android:maxLength="7"
                     android:textAlignment="center"
                     android:textSize="20sp"
 
@@ -252,12 +253,10 @@
                         android:id="@+id/temporizador_button_start"
                         android:layout_width="wrap_content"
                         android:layout_height="50dp"
-
                         android:backgroundTint="@color/teal_200"
                         android:text="Iniciar"
                         app:icon="@android:drawable/ic_media_play"
-                        app:iconPadding="0dp"
-                        app:iconTint="@color/white" />
+                        app:iconPadding="0dp"/>
                 </TableRow>
 
                 <TableRow
@@ -272,13 +271,11 @@
                         android:id="@+id/timeLeftScan_textView"
                         android:layout_width="wrap_content"
                         android:layout_height="60dp"
-                        android:background="@android:drawable/editbox_background_normal"
-                        android:backgroundTint="#E6E6E6"
+                        android:backgroundTint="@color/teal_700"
                         android:fontFamily="sans-serif-medium"
                         android:gravity="center"
                         android:text="02:03:12"
                         android:textAlignment="center"
-                        android:textColor="@color/black"
                         android:textSize="24sp" />
                 </TableRow>
 
@@ -294,10 +291,8 @@
                         android:id="@+id/temporizador_buttonStop"
                         android:layout_width="150dp"
                         android:layout_height="50dp"
-                        android:background="@android:drawable/progress_horizontal"
                         android:backgroundTintMode="src_over"
                         android:text="Detener"
-                        app:icon="@android:drawable/editbox_dropdown_light_frame"
                         app:iconSize="24dp" />
                 </TableRow>
 
@@ -320,7 +315,7 @@
                 android:id="@+id/GraphSpikes_Layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="12dp"
                 android:orientation="horizontal">
 
                 <TextView

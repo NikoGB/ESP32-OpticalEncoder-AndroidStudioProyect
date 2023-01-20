@@ -22,7 +22,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@android:drawable/edit_text"
                 android:gravity="right"
                 android:orientation="vertical">
 
@@ -35,8 +34,7 @@
                     android:gravity="center_vertical"
                     android:paddingEnd="32dp"
                     android:text="Agendamiento 1"
-                    android:textColor="@color/black"
-                    android:textSize="18sp" />
+                    android:textSize="24sp" />
 
                 <View
                     android:id="@+id/divider13"
@@ -95,7 +93,6 @@
                 android:paddingStart="20dp"
                 android:paddingTop="4dp"
                 android:text="12/02/2020\n12:50:01"
-                android:textColor="@color/black"
                 android:textSize="18sp" />
 
             <TextView
@@ -107,7 +104,6 @@
                 android:paddingStart="20dp"
                 android:paddingTop="4dp"
                 android:text="15/02/2020\n12:50:01"
-                android:textColor="@color/black"
                 android:textSize="18sp" />
 
             <ImageButton
@@ -115,7 +111,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="20dp"
-                android:background="@android:drawable/editbox_dropdown_light_frame"
                 android:contentDescription="Delete Schedule"
                 android:padding="6dp"
                 android:scaleType="fitCenter"

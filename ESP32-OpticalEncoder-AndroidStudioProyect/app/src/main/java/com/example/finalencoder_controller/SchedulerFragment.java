@@ -188,58 +188,75 @@ public class SchedulerFragment extends Fragment {
 
             // Check the schedule type
             if(schedule.sType == 0){
-                // Set the Image tint to green 
-                intButt.setImageTintList(ContextCompat.getColorStateList(getContext(), R.color.green));
-                // Crate a new event listener for the IntButton
-                intButt.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        // Create a new Bundle object to pass the data to the ShowDataPointsFragment
-                        Bundle bun = new Bundle();
-                        // Put the data to the Bundle object 
-                        bun.putString("dataP", ControlCenter.getInstance().schedulerFrag.GetDataPointInfo(schedule.scName));
-                        // Navigate to the ShowDataPointsFragment with the Bundle object
-                        ControlCenter.getInstance().mainActivity.navigateTo(R.id.action_ContentMainFragment_to_showDataPointsFragment, bun, "Informacion de muestreo");
-                    }
-                });
+               try {
+                   // Set the Image tint to green
+                   intButt.setImageTintList(ContextCompat.getColorStateList(getContext(), R.color.green));
+                   // Crate a new event listener for the IntButton
+                   intButt.setOnClickListener(new View.OnClickListener() {
+                       @Override
+                       public void onClick(View view) {
+                           // Create a new Bundle object to pass the data to the ShowDataPointsFragment
+                           Bundle bun = new Bundle();
+                           // Put the data to the Bundle object
+                           bun.putString("dataP", ControlCenter.getInstance().schedulerFrag.GetDataPointInfo(schedule.scName));
+                           // Navigate to the ShowDataPointsFragment with the Bundle object
+                           ControlCenter.getInstance().mainActivity.navigateTo(R.id.action_ContentMainFragment_to_showDataPointsFragment, bun, "Informacion de muestreo");
+                       }
+                   });
+               }catch (Exception e){
+                   // error al mostrar la informacion del muestreo
+                   ControlCenter.getInstance().mainActivity.makeSnackB("Error al mostrar los datos");
+               }
             }else if(schedule.sType == 1){
-                // Set the Image tint to red if the schedule is a delete schedule 
-                intButt.setImageResource(android.R.drawable.ic_menu_delete);
-                intButt.setImageTintList(ContextCompat.getColorStateList(getContext(), R.color.red));
-                // Crate a new event listener for the IntButton
-                intButt.setOnClickListener(view -> {
-                    // Send the command to delete the schedule to the device 
-                    ControlCenter.getInstance().connectionFrag.sendCommand("SCHEDULE;DELETE;" + schedule.scName + ";",
-                            () -> deleteAwaitSchedule(position), 20000);
-                });
+                try {
+                    // Set the Image tint to red if the schedule is a delete schedule
+                    intButt.setImageResource(android.R.drawable.ic_menu_delete);
+                    intButt.setImageTintList(ContextCompat.getColorStateList(getContext(), R.color.red));
+                    // Crate a new event listener for the IntButton
+                    intButt.setOnClickListener(view -> {
+                        // Send the command to delete the schedule to the device
+                        ControlCenter.getInstance().connectionFrag.sendCommand("SCHEDULE;DELETE;" + schedule.scName + ";",
+                                () -> deleteAwaitSchedule(position), 20000);
+                    });
+                } catch (Exception e){
+                    // error al borrar una schedule
+                    ControlCenter.getInstance().mainActivity.makeSnackB("Error al borrar el agendamiento");
+                }
             }else if(schedule.sType == 2){
-                // Set the Image tint to blue if the schedule is a update schedule
-                intButt.setImageResource(android.R.drawable.ic_menu_search);
-                intButt.setImageTintList(ContextCompat.getColorStateList(getContext(), R.color.purple_700));
-                // Crate a new event listener for the IntButton
-                intButt.setOnClickListener(view -> ControlCenter.getInstance().mainContent.navigateViewPag(0) );
+                try {
+                    // Set the Image tint to blue if the schedule is a update schedule
+                    intButt.setImageResource(android.R.drawable.ic_menu_search);
+                    intButt.setImageTintList(ContextCompat.getColorStateList(getContext(), R.color.purple_700));
+                    // Crate a new event listener for the IntButton
+                    intButt.setOnClickListener(view -> ControlCenter.getInstance().mainContent.navigateViewPag(0) );
+                } catch (Exception e){
+                    // error al navegar al menu
+                    ControlCenter.getInstance().mainActivity.makeSnackB("Error al cambiar de pestaña");
+                }
             }
             // Return the view 
             return convertView;
         }
     }
 
-    // TODO: check if the documentation is correct
+
     String GetDataPointInfo(String scName){
-        // Get the data from the device
+        // obtine los datos almacenados en el archivo "data_"
         String dat = ControlCenter.getInstance().getData("data_", ControlCenter.getInstance().connectionFrag.devName);
-
-        // Format the data to get the position of the first schedule
+        // si el archivo contiene un error va a tener el # al final
+        if (dat.contains("#")){
+            // en ese caso se elimina para que no afecte al resto de la funcion
+            dat= dat.replace("#","");
+        }
+        // obtiene la posicion del agendemiento
         int scPos = dat.indexOf(";"+ scName + ";");
-        // check if the schedule pos is valid if not return an empty string
+        // verifica que sea una posicion valida si no retorna vacio
         if(scPos < 0){ return ""; }
-
-        // Get the position of the last schedule to get all the data of the schedules (format: START;NAME;FECHAINI;INTERVAL;MESUAREUNIT;....STOP;FECHAFIN;)
+        // obtiene la ultima posicion del agendamiento (busca el siguiente START) (format: START;NAME;FECHAINI;INTERVAL;MESUAREUNIT;....STOP;FECHAFIN;)
         int scLastPos = dat.indexOf("START", scPos);
-        // Check if the next schedule pos is valid if not set the last pos to the end of the data
+        // verifica que la posicion sea valida, si no asigna el tamaño completo del archivo
         if(scLastPos < 0){ scLastPos = dat.length(); }
-
-        // Return all the schedules data from the schedule position to the last schedule position
+        // devuelve todos los datos del schedule
         return  dat.substring(dat.lastIndexOf("START", scPos), scLastPos);
     }
 

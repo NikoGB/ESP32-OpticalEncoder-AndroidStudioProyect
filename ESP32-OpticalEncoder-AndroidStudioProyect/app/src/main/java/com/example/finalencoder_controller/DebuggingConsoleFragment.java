@@ -34,6 +34,14 @@ public class DebuggingConsoleFragment extends Fragment {
         // set the scroll view to the bottom
         binding.debugScrollView.fullScroll(View.FOCUS_DOWN);
 
+        // para forzar la vista al ultimo elemento de la consola de debug
+        binding.debugScrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                binding.debugScrollView.fullScroll(View.FOCUS_DOWN);
+            }
+        });
+
         return binding.getRoot();
     }
     // update the console log with the message received

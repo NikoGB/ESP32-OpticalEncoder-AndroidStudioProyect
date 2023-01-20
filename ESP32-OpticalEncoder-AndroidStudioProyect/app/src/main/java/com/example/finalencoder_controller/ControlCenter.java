@@ -79,9 +79,9 @@ public class ControlCenter {
 
                         connectionFrag.requestInfo("SCHEDULE;GET;",
                                 ()-> saveData(getCheckedCreatedSchedules(lastReceivedMsg), "schedules_", false),
-                                ()-> connectionFrag.disconnectDevice(), 10000);
+                                ()-> connectionFrag.disconnectDevice(), 100000);
 
-                    },()-> connectionFrag.disconnectDevice(), 10000);
+                    },()-> connectionFrag.disconnectDevice(), 100000);
 
         }else{
             lastSentMsg = ""; lastReceivedMsg = "";
@@ -258,19 +258,18 @@ public class ControlCenter {
         return dataS;
     }
 
-
-
+    /**
+     * @return un booleano que indica si se elimino o no los datos
+     * @param dInfo datos a eliminar
+     * @param onFile en el archivo
+     */
     public boolean deleteData(String dInfo, String onFile){
         String actD = getData(onFile);
-        // If the actual data is null, return false 
         if(actD == null || actD.equals("") || !actD.contains(dInfo)){
             return false;
         }
-        // Remove the data from the actual data 
         actD = actD.replace(dInfo, "");
-        // Save the actual data
         saveData(actD, onFile, false);
-
         return true;
     }
 

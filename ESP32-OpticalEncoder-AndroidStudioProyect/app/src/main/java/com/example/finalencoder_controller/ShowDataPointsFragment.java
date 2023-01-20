@@ -30,15 +30,10 @@ public class ShowDataPointsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
         binding = FragmentShowDataPointsBinding.inflate(inflater, container, false);
-        //Get the instance of the control center
         ControlCenter.getInstance().showDataPointFrag = this;
-        //Check to see if the bundle has any data
         if(getArguments() != null){
-            //Get the data from the bundle
             setDataToShow(getArguments().getString("dataP"));
         }
-
-        //Return the view
         return binding.getRoot();
     }
 
@@ -47,95 +42,81 @@ public class ShowDataPointsFragment extends Fragment {
     }
 
     void setDataToShow(String dataP){//START;NAME;FECHAINI;INTERVAL;MESUAREUNIT;....STOP;FECHAFIN; <-
-        // Check if the data is empty
+        // verifica que exitan datos
         if(dataP.equals("")){
-            // Set the text to no data found
             binding.dataInfoNameTextView.setText("No se encontro data");
             return;
         }
-        // Split the data into two parts the first part is the name, start time, interval, and measure unit and the second part is the end time
+        // si el archivo contiene un error va a tener el # al final
+        if (dataP.contains("#")){
+            // en ese caso se elimina para que no afecte al resto de la funcion
+            dataP= dataP.replace("#","");
+        }
+        // divide los datos en 2 partes, la primera es una session de muestreo (formato de arriba), la otra el resto
         String[] sSplit = dataP.split("STOP");
-        // Split the start data into the name, start time, interval, and measure unit and store it in an array of strings
+        // separa por ; los valores del muestreo
         String[] startSplit = sSplit[0].split(";");
 
-        // Set the name of the data to the name of the data in the array
+        // muestra el nombre del muestreo en el textView
         binding.dataInfoNameTextView.setText(startSplit[1]);
 
-        // Set the start time of the data to the start time of the data in the array
+        // obtiene la fecha formateada yyyy-mm-dd hh:mm:ss.ms
         String formatDate = startSplit[2].replace("T", "  ");
-        // Remove the seconds from the time and replace it with milliseconds and set the text to the new time format because the time format is yyyy-mm-dd hh:mm:ss.ms
         formatDate =  formatDate.substring(0, formatDate.lastIndexOf(":")) + "." + formatDate.substring(formatDate.lastIndexOf(":") + 1);
-        // Set the text to the new time format
+        // muestra la fecha
         binding.dataInfoStartTimeTextView.setText(formatDate);
 
-        // Set the end time of the data to the end time of the data in the array (sSplit[1] is the second part of the data)
+        // obtine el tiempo de termino que se encuentra en la sSplit[1] y formatea la fecha yyyy-mm-dd hh:mm:ss.ms
         formatDate = sSplit[1].substring(sSplit[1].indexOf(";") + 1, sSplit[1].length() - 1).replace("T", "  ");
-        // Remove the seconds from the time and replace it with milliseconds and set the text to the new time format because the time format is yyyy-mm-dd hh:mm:ss.ms
         formatDate =  formatDate.substring(0, formatDate.lastIndexOf(":")) + "." + formatDate.substring(formatDate.lastIndexOf(":") + 1);
-        // Set the text to the new time format
+        // muestra la fecha
         binding.dataInfoEndTimeTextView.setText(formatDate);
 
-        // Set the interval of the data to the interval of the data in the array
+        // define la magnitud de los datos (cm,m,mm)
         binding.dataGraphView.getGridLabelRenderer().setVerticalAxisTitle("Distancia(" + (startSplit[4])+")");
 
-        // Set the measure unit of the data to the measure unit of the data in the array
+        // define el intervalo entre los datos
         float intervalo = Integer.parseInt(startSplit[3]) * 0.001f;
 
-        // Create a new label formatter to format the labels on the graph to show the distance instead of the time 
+        // Crea un nuevo label para los datos del grafico
         LabelFormatter labfor = new LabelFormatter() {
-            // Override the format label method to format the labels on the graph to show the distance instead of the time
             @Override
             public String formatLabel(double value, boolean isValueX) {
-                // Check if the value is the x value (the time)
                 if(isValueX){
-                    // Create a new decimal format to format the value to two decimal places
                     DecimalFormat df = new DecimalFormat("#.##");
-                    // Create a new string to store the formatted value and return it
                     String str = df.format(value * intervalo) + "\n";
-                    // Return the formatted value
                     return str;
                 }else{
-                    // Return the value as a string
                     return "" + value;
                 }
             }
-
             @Override
-            public void setViewport(Viewport viewport) {
-
-            }
+            public void setViewport(Viewport viewport) {}
         };
-        // Set the label formatter to the new label formatter
+        // asigna el label para el formateo de los datos
         binding.dataGraphView.getGridLabelRenderer().setLabelFormatter(labfor);
-        // Create a new line graph series to store the data 
+        // crea series para los graficos de linea y los datapoints
         LineGraphSeries<DataPoint> mDataSeries = new LineGraphSeries<>();
-        // Create a new points graph series to store the data 
         PointsGraphSeries<DataPoint> mPointDataSeries = new PointsGraphSeries<>();
 
-        // Declare a new double to store the last x value (the number of data points)
+        // declara un double para almacenar la ultima posicion de x
         double dataGraphLastX = 0d;
-        // Split the data into an array of strings the data is split by the new line character and the exclamation point character (!distance1\n!distance2...)
+        // divide los datos en una array basandose en el formato de !distance1\n!distance2...
         String[] dats = startSplit[5].replace("\n", "").split("!");
-
-        // Loop through the array of strings
+        // para cada dato en datoS
         for (String dat : dats) {
-            // Check if the string is empty
+            // verifica que los datos no sean vacios
             if (dat.equals("")) {
-                // Continue the loop
                 continue;
             }
             
-            // Parse the string to a float and add it to the data series
+            // transforma el valor del dato (distancia) a un float
             float dist = Float.parseFloat(dat);
-            // add one to the last x value
+            // agrega 1 a la ultima posicion de X
             dataGraphLastX += 1d;
-            // Add the data to the data series and set the last x value and set the y value to the distance
-            // TODO: Check the false and 36000
-            // the false means that the data should not be animated and the 36000 means that the data should be shown for 36000 seconds
+            // agrega los los datos al grafico
             mPointDataSeries.appendData(new DataPoint(dataGraphLastX, dist), false, 36000);
-            // Add the data to the data series and set the last x value to the new last x value and set the y value to the distance
             mDataSeries.appendData(new DataPoint(dataGraphLastX, dist), false, 36000);
-
         }
 
         // Add the last data point to the data series and set the last x value to the new last x value and set the y value to 0
@@ -171,7 +152,6 @@ public class ShowDataPointsFragment extends Fragment {
 
         // Set the viewport to the data graph and set the y axis bounds to manual
         mPointDataSeries.setCustomShape(new PointsGraphSeries.CustomShape() {
-            
             @Override
             public void draw(Canvas canvas, Paint paint, float x, float y, DataPointInterface dataPoint) {
                 // Check if the data point is the first data point or if the data point is a multiple of the amount of data points

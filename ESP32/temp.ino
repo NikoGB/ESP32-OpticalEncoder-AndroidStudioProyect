@@ -31,3 +31,12 @@
   1. ahora la app espera al * para contar como si el mensaje termino
       por lo hay que poner el * al final de cada SerialBT.println(...+'*');
 */
+
+/*
+  TODO:
+  1. Revisar en la app que pasa cuando resive un #ERROR;DATA;
+  2. Revisar en la app que pasa cuando resive un #ERROR;SCHEDULE;
+  3. Cambiar el formato del boton de iniciar el timer para el formato TIMER;mm:ss:ms;
+  4. Agregar una forma de cambiar el tiempo de muestreo en la app
+  5. Agregar una forma de reiniciar el valor de la variable varTiempoMuestreo en la app
+*/

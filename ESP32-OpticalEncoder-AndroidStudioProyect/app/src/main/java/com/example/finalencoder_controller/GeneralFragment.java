@@ -86,8 +86,6 @@ public class GeneralFragment extends Fragment {
                         }
                     }
                     DecimalFormat dF = new DecimalFormat("00");
-
-
                     String tDisp = dF.format(minutes) + ":" + dF.format(seconds) + "." + new DecimalFormat("000").format(milliseconds);
                     ControlCenter.getInstance().mainActivity.onUIThread(()-> tempT.setText(tDisp));
                 }
@@ -135,7 +133,7 @@ public class GeneralFragment extends Fragment {
                 }
         );
 
-        // set the onClickListener for the edit text to show the time picker
+        // define la accion del editText que almacena el tiempo
         binding.editTextTime.setOnClickListener((view) -> {
                         // hide the keyboard
                         InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -143,7 +141,7 @@ public class GeneralFragment extends Fragment {
                         // create a new time picker fragment
                         ExtendedTimePickerFragment tPick = new ExtendedTimePickerFragment(2, 0);
                         tPick.onAccept = ()->  {
-                            // set the time in the edit text
+                            // guarda el valor seleccionado en rsTime con formato mm:ss:ms
                             rsTime = tPick.minute + ":" + tPick.second + ":" + tPick.millisecond;
                             // format the time to be displayed properly
                             DecimalFormat df = new DecimalFormat("00");
@@ -164,8 +162,13 @@ public class GeneralFragment extends Fragment {
                 Toast.makeText(getContext(),"Debes estar conectado para usar esta funcion",Toast.LENGTH_LONG).show();
                 return;
             }
-                // send the command to start the timer
-                ControlCenter.getInstance().connectionFrag.sendCommand("ON;" + rsTime, () -> {
+            // si no se ha ingresado una cantidad de tiempo solicitar el ingreso de una
+            if(rsTime == null || rsTime.isEmpty() || rsTime.compareTo("0:0:0")==0){
+                Toast.makeText(getContext(),"Debe ingresar la duracion del temporizador (mayor a 00:00.000)",Toast.LENGTH_LONG).show();
+                return;
+            }
+                // Envia el commando al ESP32 formato TIMER;mm:ss:ms;
+                ControlCenter.getInstance().connectionFrag.sendCommand("TIMER;" + rsTime+";", () -> {
                     // set the temp state to true
                     setTempState(true);
                     // create a new thread to hold the countdown timer
@@ -186,8 +189,9 @@ public class GeneralFragment extends Fragment {
                     binding.scanStateSwitch.setChecked(true);
                     // set the switch to be disabled
                     binding.scanStateSwitch.setEnabled(false);
+                    // !123.3221*
 
-                }, 10000);
+                }, 100000);
 
         });
         // set the onClickListener for the stop button
@@ -204,18 +208,15 @@ public class GeneralFragment extends Fragment {
                 binding.scanStateSwitch.setChecked(false);
                 // set the switch to be enabled
                 binding.scanStateSwitch.setEnabled(true);
-            }, 10000);
+            }, 100000);
         } );
 
         // set the onCheckedChangedListener for the switch
         binding.scanStateSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 // check if the switch is being checked
                 if(b == ControlCenter.getInstance().isSendingScan){ return; }
-
 
                 if(b){
                     // send the command to turn on the scan
@@ -233,7 +234,7 @@ public class GeneralFragment extends Fragment {
                     }, ()->{  
                         // set the switch to be enabled
                         binding.scanStateSwitch.setEnabled(true);
-                    },10000);
+                    },100000);
                     // disable the switch
                     binding.scanStateSwitch.setChecked(false);
                 }else{
@@ -259,7 +260,7 @@ public class GeneralFragment extends Fragment {
                         }, ()->{ 
                             // set the switch to be enabled
                             binding.scanStateSwitch.setEnabled(true);
-                        },10000);
+                        },100000);
                         binding.scanStateSwitch.setChecked(true);
                     }
                 }
@@ -377,18 +378,18 @@ public class GeneralFragment extends Fragment {
     // set the visibility of the views of the temporizador
     void setTempState(boolean started){
         // check if the temporizador is started or not and set the visibility of the views of the temporizador
-        binding.temporizadorRow1.setVisibility((started ? View.GONE : View.VISIBLE));
-        binding.temporizadorRow2.setVisibility((started ? View.GONE : View.VISIBLE));
-        binding.temporizadorRow3.setVisibility((started ? View.VISIBLE : View.GONE));
-        binding.temporizadorRow4.setVisibility((started ? View.VISIBLE : View.GONE));
+        ControlCenter.getInstance().mainActivity.onUIThread(()->{
+            binding.temporizadorRow1.setVisibility((started ? View.GONE : View.VISIBLE));
+            binding.temporizadorRow2.setVisibility((started ? View.GONE : View.VISIBLE));
+            binding.temporizadorRow3.setVisibility((started ? View.VISIBLE : View.GONE));
+            binding.temporizadorRow4.setVisibility((started ? View.VISIBLE : View.GONE));
+        });
     }
 
 
     // variable to store the last value of the x-axis of the graph
     double dataGraphLastX = 0d;
     public void showCapturedData(float dist){
-
-        
         // dataGraphLastX is the last value of the x-axis of the graph
         dataGraphLastX += 1d; // add 1d to dataGraphLastX
         
@@ -401,7 +402,6 @@ public class GeneralFragment extends Fragment {
     }
 
     public void deviceConnected(String name){
-        
         // Set the color of the connection status to green.
         binding.connectionImageView.setImageTintList(ContextCompat.getColorStateList(getContext(), R.color.green));
         // Set the text of the connection status to "Conectado".
@@ -415,12 +415,10 @@ public class GeneralFragment extends Fragment {
     }
 
     public void deviceDisconnected(){
-        
         // Set the image to a red color and the text to the disconnected state.
         binding.connectionImageView.setImageTintList(ContextCompat.getColorStateList(getContext(), R.color.red));
         binding.connectionTextView.setText("Desconectado");
         binding.connectionDeviceNameTextView.setText("ninguno");
-
         // Stop scanning for devices.
         turnOffScanning();
     }

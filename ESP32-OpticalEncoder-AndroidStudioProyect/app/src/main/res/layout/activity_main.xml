@@ -71,7 +71,6 @@
             android:gravity="center"
             android:text="Esperando respuesta..."
             android:textAlignment="center"
-            android:textColor="@color/black"
             android:textSize="28sp" />
 
     </FrameLayout>

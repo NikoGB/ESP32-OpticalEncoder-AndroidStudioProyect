@@ -51,13 +51,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        
         // The binding object will be used to access UI elements in the layout.
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         // Set the content view to the layout defined in the binding object.
         setContentView(binding.getRoot());
-
         // set the toolbar as the app bar
         setSupportActionBar(binding.toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -66,8 +63,7 @@ public class MainActivity extends AppCompatActivity {
         // set the title of the toolbar
         tittle = "Experimento de muestreo";
         // ocultamos la action bar para tener mas espacio en pantalla
-        actionBar.hide();
-
+        //actionBar.hide();
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
         NavController navController = navHostFragment.getNavController();
@@ -200,11 +196,8 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         if(isMain){
             getMenuInflater().inflate(R.menu.menu_main, menu);
-
             return true;
         }
-
-
         return false;
     }
 

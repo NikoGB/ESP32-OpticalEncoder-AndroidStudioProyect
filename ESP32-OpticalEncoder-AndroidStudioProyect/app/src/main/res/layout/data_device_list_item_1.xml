@@ -31,6 +31,7 @@
                     android:paddingStart="20dp"
                     android:text="ESP32"
                     android:textColor="@color/teal_700"
+                    android:maxLength="11"
                     android:textSize="24sp" />
 
                 <TextView
@@ -49,7 +50,6 @@
                 android:layout_width="60dp"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="20dp"
-                android:background="@android:drawable/editbox_dropdown_light_frame"
                 android:contentDescription="Delete Schedule"
                 android:padding="8dp"
                 android:scaleType="fitCenter"
@@ -63,7 +63,6 @@
                 android:layout_height="60dp"
                 android:layout_marginEnd="20dp"
                 android:adjustViewBounds="true"
-                android:background="@android:drawable/editbox_dropdown_light_frame"
                 android:contentDescription="Delete Schedule"
                 android:padding="12dp"
                 android:scaleType="fitCenter"
