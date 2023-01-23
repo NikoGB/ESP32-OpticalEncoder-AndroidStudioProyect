@@ -327,10 +327,11 @@ void check(int code)
         Serial.println("No se realizo ninguna accion");
     }
     // delay para dejar que la app reciba el primer mensaje
-    delay(100);
+    delay(1000);
     // siempre se manda un mensaje por bluetooth para indicar el resultado de la funcion
     // la applicacion de android se encarga de interpretar el mensaje (formato: <codigo>*)
     SerialBT.println(String(code) + "*");
+    Serial.println(String(code)+"*");
 }
 
 // funcion para fortmatear la fecha y hora en un formato legible por el DateTime de la libreria RTClib
@@ -437,7 +438,7 @@ int loadSchedule()
     // se lee el archivo "schedules.txt" y se almacena en la variable String
     while (file.available())
     {
-        schedule = file.readUntil('-');
+        schedule = file.readStringUntil('-');
         // se obtiene la fecha y hora de inicio del agendamiento
         String scStart = schedule.substring(schedule.indexOf(",") + 1, schedule.length());
         scStart = scStart.substring(0, scStart.indexOf(",") - 2);
@@ -484,7 +485,6 @@ int on()
 int funcTimer(char *message)
 {
     // iterar el mensaje para obtener el valor del tiempo formato: "TIMER;TIEMPO;"
-    char *p = strtok(message, ";");
     // el TIEMPO viene en formato mm:ss:ms => 00:00:000
     // se obtiene el valor de los minutos
     char *m = strtok(NULL, ":");
