@@ -148,8 +148,8 @@ public class DataSchedulerFragment extends Fragment {
                         bun.putString("dataP", ControlCenter.getInstance().dataSchFrag.GetScDataPointInfo(schedule.scName));
                     }else{
                         bun.putString("dataP", ControlCenter.getInstance().dataSchFrag.GetDataPointInfo(schedule.stTime.toParse()));
-
                     }
+                    bun.putString("devName", ControlCenter.getInstance().dataSchFrag.deviceName);
                     ControlCenter.getInstance().mainActivity.navigateTo(R.id.action_dataSchedulerFragment_to_showDataPointsFragment, bun, "Informacion de muestreo");
 
                 });
