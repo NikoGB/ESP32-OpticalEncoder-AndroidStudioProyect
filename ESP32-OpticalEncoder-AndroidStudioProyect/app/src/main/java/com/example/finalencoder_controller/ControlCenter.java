@@ -98,11 +98,24 @@ public class ControlCenter {
         if(onSucces != null){ onSucces.run(); }
         },
         // if the request failed, call the user specified callback
-        onFail, 10000);
+        onFail, 100000);
     }
 
     void checkOperation(String msg){
-        if(isSendingScan){
+        if(msg.equals("scheduleStart")){
+            mainActivity.onUIThread(() -> schedulerFrag.scheduleStateChanged(2));
+            isSendingScan = true;
+            generalFrag.turnOnScanning();
+
+        }else if(msg.equals("scheduleStop")){
+            mainActivity.onUIThread(() -> {
+                schedulerFrag.scheduleStateChanged(0);
+                //isSendingScan = false;
+                generalFrag.turnOffScanning();
+            } );
+
+
+        } else if(isSendingScan){
             // ! indicates the start of a distance value
             if(msg.charAt(0) == '!'){
                 // get the distance value
@@ -194,6 +207,7 @@ public class ControlCenter {
 
     public String getCheckedCreatedSchedules(String dataS){
         // If the data is null, return an empty string
+        //schedulerFrag.cleanAllSchedules();
         if(dataS == null || Objects.equals(dataS, "") || !dataS.contains("-")){
             return "";
         }
@@ -271,6 +285,37 @@ public class ControlCenter {
         actD = actD.replace(dInfo, "");
         saveData(actD, onFile, false);
         return true;
+    }
+
+    public void saveDataOnStorage(String data, String nFile, String devName){
+        File dir = new File(mainActivity.getExternalStorage(), "Experimentos_Distancia");
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+
+        File t = new File(dir,"DataDispositvo_" + devName);
+        // If the t file does not exist
+        if(!t.exists()){
+            // Create the t file
+            t.mkdir();
+        }
+
+        try{
+            File fos = new File(t, nFile + ".txt");
+            // Create a new FileWriter object and set it to writer with the fos file and the append boolean
+            FileWriter writer = new FileWriter(fos, false);
+            // Write the sInfo string to the writer
+            writer.write(data);
+            // Flush the writer
+            writer.flush();
+            // Close the writer
+            writer.close();
+            mainActivity.makeSnackB("Exportado correctamente en: "+ t.getPath());
+        }catch (IOException e){
+            // If an error occurs, make a snackB with the error
+            mainActivity.makeSnackB("Intento "+ t.getPath());
+            mainActivity.makeSnackB("No se ha podido guardar (" + e + ")");
+        }
     }
 
     public void saveData(String sInfo, String onFile, boolean append){
