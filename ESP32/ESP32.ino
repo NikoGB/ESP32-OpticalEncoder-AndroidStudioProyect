@@ -618,6 +618,19 @@ void loop()
     {
         // se asigna la fecha y hora de inicio del siguiente agendamiento un valor muy alto para que no se cumpla la condicion
         nextSchedule = DateTime("9999:12:30", "10:10:10");
+	if(isOn){
+        	// se crea un string con el formato "STOP;FechaHoraDeTermino"
+        	String dat = "STOP;" + dateNow() + ";";
+        	// se guarda el string en el archivo "data.txt"
+        	saveToSDCard("data.txt", dat);
+        	SerialBT.println("sAbort*");
+		delay(3000);
+        	// se manda el data.txt por bluetooth al terminar el agendamiento
+        	readBT("data.txt");
+        	delay(3000); 
+		
+		
+	}
         // se crea un string con el formato "START;Nombre;FechaHoraDeInicio;TiempoDeMuestreo;UnidadDeMedida;"
         String dat = "START;" + nSchedule + ";" + dateNow() + ";" + String(varTiempoMuestreo, DEC) + ";" + "cm" + ";";
         // se guarda el string en el archivo "data.txt" y se inicia el muestreo
@@ -626,6 +639,10 @@ void loop()
         isOn = true;
         // guarda el inicio del agendamiento en data y empieza a tomar la data
         enAgendamiento = true;
+
+        // se manda un mensaje por bluetooth para indicar que se inicio el agendamiento (no estoy seguro sobre el c_str())
+	SerialBT.println("scheduleStart*");
+	delay(1000); 
     }
 
     // si la variable isOn es true se ejecuta el siguiente código
@@ -647,9 +664,14 @@ void loop()
             String dat = "STOP;" + dateNow() + ";";
             // se guarda el string en el archivo "data.txt"
             saveToSDCard("data.txt", dat);
+	    delay(100); 
+	    SerialBT.println("scheduleStop*");
+	    delay(1000); 
+	    SerialBT.println("1*");
+	    delay(1000); 
             // se manda el data.txt por bluetooth al terminar el agendamiento
             readBT("data.txt");
-            delay(100);
+            delay(1000);
             // se carga el siguiente agendamiento
             loadSchedule();
         }

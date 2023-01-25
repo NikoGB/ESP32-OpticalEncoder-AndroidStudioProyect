@@ -18,6 +18,7 @@ import com.example.finalencoder_controller.databinding.FragmentSchedulerBinding;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Objects;
 
 public class SchedulerFragment extends Fragment {
@@ -199,6 +200,8 @@ public class SchedulerFragment extends Fragment {
                            Bundle bun = new Bundle();
                            // Put the data to the Bundle object
                            bun.putString("dataP", ControlCenter.getInstance().schedulerFrag.GetDataPointInfo(schedule.scName));
+                           bun.putString("devName", ControlCenter.getInstance().schedulerFrag.GetDataPointInfo(ControlCenter.getInstance().connectionFrag.devName));
+
                            // Navigate to the ShowDataPointsFragment with the Bundle object
                            ControlCenter.getInstance().mainActivity.navigateTo(R.id.action_ContentMainFragment_to_showDataPointsFragment, bun, "Informacion de muestreo");
                        }
@@ -288,6 +291,13 @@ public class SchedulerFragment extends Fragment {
         
         boolean dCheck = false;
 
+        Calendar cal = Calendar.getInstance();
+        String dt = cal.get(Calendar.YEAR) +"/" + (cal.get(Calendar.MONTH) + 1) + "/"+ cal.get(Calendar.DAY_OF_MONTH) + "T" + cal.get(Calendar.HOUR_OF_DAY) + ":" +  cal.get(Calendar.MINUTE) + ":0";
+        ScheduleItem.DateType actDate = new ScheduleItem.DateType(dt);
+        if(actDate.compare(sc.stTime.data) >= 0){
+            return -3;
+        }
+
         // Check if the schedule is in the await schedule list
         for(int i = 0; i < awaitScAdapterListView.getCount(); i++){
             // Get the schedule from the position of the await schedule list
@@ -300,14 +310,14 @@ public class SchedulerFragment extends Fragment {
 
             // if dCheck is true continue the loop
             if(dCheck){ continue; }
-            // compare the start and end time of the schedules to check if the schedules are available
-            if(sC.edTime.compare(sc.stTime.data) <= 0 || sC.stTime.compare(sc.edTime.data) >= 0){
+            if((sC.stTime.compare(sc.stTime.data) <= 0 && sC.edTime.compare(sc.stTime.data) >= 0)
+                    || (sC.stTime.compare(sc.edTime.data) <= 0 && sC.edTime.compare(sc.edTime.data) >= 0)){
+                // if the schedules are not available return -1 (error code)
+                return -1;
+            } // compare the start and end time of the schedules to check if the schedules are available
+            else if(sC.edTime.compare(sc.stTime.data) <= 0 || sC.stTime.compare(sc.edTime.data) >= 0){
                 // if the schedules are available set dCheck to true to continue the loop
                 dCheck = true;
-            }else if((sC.stTime.compare(sc.stTime.data) >= 0 && sC.edTime.compare(sc.stTime.data) <= 0)
-                    || (sC.stTime.compare(sc.edTime.data) >= 0 && sC.edTime.compare(sc.edTime.data) <= 0)){
-                // if the schedules are not available return -1 (error code)
-                return -1; 
             }
         }
         // return 1 if the schedule is available
@@ -333,6 +343,7 @@ public class SchedulerFragment extends Fragment {
             finishedAdapterListView.notifyDataSetChanged();
 
             // Update the height of the list
+            updateListHeight(binding.executingScheduleListView);
             updateListHeight(binding.dueScheduleListView);
 
         }else{ //2 ejecutando
@@ -352,10 +363,23 @@ public class SchedulerFragment extends Fragment {
             awaitScAdapterListView.notifyDataSetChanged();
 
             // Update the height of the list
+            updateListHeight(binding.executingScheduleListView);
             updateListHeight(binding.awaitScheduleListView);
         }
 
         // Update the height of the list
+        updateListHeight(binding.executingScheduleListView);
+    }
+    public void cleanAllSchedules(){
+        awaitScAdapterListView.clear();
+        awaitScAdapterListView.notifyDataSetChanged();
+        finishedAdapterListView.clear();
+        finishedAdapterListView.notifyDataSetChanged();
+        executingAdapterListView.clear();
+        executingAdapterListView.notifyDataSetChanged();
+        // Update the height of the list
+        updateListHeight(binding.awaitScheduleListView);
+        updateListHeight(binding.dueScheduleListView);
         updateListHeight(binding.executingScheduleListView);
     }
 
@@ -433,6 +457,17 @@ public class SchedulerFragment extends Fragment {
 
     // Method to update the height of the list
     void updateListHeight(ListView lv){
+        if(lv.getAdapter().getCount() == 0){
+            ViewGroup.LayoutParams params = lv.getLayoutParams();
+            // set the height of the list to the height of the first item of the list multiplied by the number of items in the list
+            params.height = 0;
+            // set the layout parameters of the list
+            lv.setLayoutParams(params);
+            // request the layout of the list
+            lv.requestLayout();
+
+            return;
+        }
         // Get the first item of the list
         View li = lv.getAdapter().getView(0, null, lv);
         // Measure the height of the first item of the list
