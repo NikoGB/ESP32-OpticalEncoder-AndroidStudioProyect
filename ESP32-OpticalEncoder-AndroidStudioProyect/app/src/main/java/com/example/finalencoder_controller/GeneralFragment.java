@@ -191,7 +191,7 @@ public class GeneralFragment extends Fragment {
                     binding.scanStateSwitch.setEnabled(false);
                     // !123.3221*
 
-                }, 100000);
+                }, 10000);
 
         });
         // set the onClickListener for the stop button
@@ -208,7 +208,7 @@ public class GeneralFragment extends Fragment {
                 binding.scanStateSwitch.setChecked(false);
                 // set the switch to be enabled
                 binding.scanStateSwitch.setEnabled(true);
-            }, 100000);
+            }, 10000);
         } );
 
         // set the onCheckedChangedListener for the switch
@@ -234,7 +234,7 @@ public class GeneralFragment extends Fragment {
                     }, ()->{  
                         // set the switch to be enabled
                         binding.scanStateSwitch.setEnabled(true);
-                    },100000);
+                    },10000);
                     // disable the switch
                     binding.scanStateSwitch.setChecked(false);
                 }else{
@@ -271,7 +271,7 @@ public class GeneralFragment extends Fragment {
         // set the onClickListener for the connection image view
         binding.connectionImageView.setOnClickListener( view -> { ControlCenter.getInstance().mainContent.navigateViewPag(2); } );
 
-        
+
         // set the interval between two values on x-axis
         float inter = ControlCenter.getInstance().scanInterval * 0.001f;
 
@@ -367,9 +367,11 @@ public class GeneralFragment extends Fragment {
         dataGraph.getGridLabelRenderer().setHorizontalAxisTitle(" \nIntervalo muestreo(seg)");
         binding.spikesGraphView.getGridLabelRenderer().setVerticalAxisTitle("Distancia(cm)");
 
+
         return binding.getRoot();
     }
 
+    double amountDataX = 1;
     // on view created method
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -390,13 +392,14 @@ public class GeneralFragment extends Fragment {
     // variable to store the last value of the x-axis of the graph
     double dataGraphLastX = 0d;
     public void showCapturedData(float dist){
+        //ControlCenter.getInstance().mainActivity.makeSnackB("New dist: " + dist + " ,ON: " + dataGraphLastX);
         // dataGraphLastX is the last value of the x-axis of the graph
         dataGraphLastX += 1d; // add 1d to dataGraphLastX
-        
+
         // add the new data to the graph
         mPointDataSeries.appendData(new DataPoint(dataGraphLastX, dist), false, 36000);
         mDataSeries.appendData(new DataPoint(dataGraphLastX, dist), false, 36000);
-        
+        binding.spikesGraphView.getViewport().scrollToEnd();
         // add a point to the auxiliar graph
         auxPointSeries.appendData(new DataPoint(dataGraphLastX + 2, mPointDataSeries.getHighestValueY()), true, 2);
     }
@@ -410,8 +413,10 @@ public class GeneralFragment extends Fragment {
         binding.connectionDeviceNameTextView.setText(name);
         // Enable the scan button.
         binding.scanStateSwitch.setEnabled(true);
+
+        //dataGraphLastX = 0d;
         // Clear the graph.
-        binding.spikesGraphView.getSeries().clear();
+
     }
 
     public void deviceDisconnected(){
@@ -424,15 +429,30 @@ public class GeneralFragment extends Fragment {
     }
 
     public void turnOffScanning(){
-        // set the scan state to false
-        ControlCenter.getInstance().isSendingScan = false;
-        // set the scan state switch to false
-        binding.scanStateSwitch.setChecked(false);
+
         // if the connected device is not connected
         if(!ControlCenter.getInstance().connectedDevice){
+            // set the scan state to false
+            ControlCenter.getInstance().isSendingScan = false;
+            // set the scan state switch to false
+            binding.scanStateSwitch.setChecked(false);
+
             // disable the scan state switch
             binding.scanStateSwitch.setEnabled(false);
+        }else{
+            // set the scan state switch to false
+            binding.scanStateSwitch.setChecked(false);
+            // set the scan state to false
+            ControlCenter.getInstance().isSendingScan = false;
         }
+    }
+
+    public void turnOnScanning(){
+        // set the scan state switch to false
+        ControlCenter.getInstance().isSendingScan = true;
+        binding.scanStateSwitch.setChecked(true);
+        binding.scanStateSwitch.setEnabled(false);
+        //binding.scanStateSwitch.setChecked(true);
     }
 
     @Override
