@@ -216,6 +216,13 @@
             android:layout_marginBottom="60dp"
             android:nestedScrollingEnabled="true"
             android:visibility="gone" />
+
+        <Button
+            android:id="@+id/ExportData_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:text="Exportar Muestreo .txt " />
     </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
