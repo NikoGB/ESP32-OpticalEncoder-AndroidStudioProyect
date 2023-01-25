@@ -26,6 +26,8 @@ import java.text.DecimalFormat;
 
 public class ShowDataPointsFragment extends Fragment {
     private FragmentShowDataPointsBinding binding;
+    String toSaveData = "";
+    String dvName = "";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
@@ -33,7 +35,14 @@ public class ShowDataPointsFragment extends Fragment {
         ControlCenter.getInstance().showDataPointFrag = this;
         if(getArguments() != null){
             setDataToShow(getArguments().getString("dataP"));
+            dvName = getArguments().getString("devName");
         }
+
+        binding.ExportDataButton.setOnClickListener(
+            view -> {
+                exportDataTxt();
+            }
+        );
         return binding.getRoot();
     }
 
@@ -45,6 +54,7 @@ public class ShowDataPointsFragment extends Fragment {
         // verifica que exitan datos
         if(dataP.equals("")){
             binding.dataInfoNameTextView.setText("No se encontro data");
+            binding.ExportDataButton.setEnabled(false);
             return;
         }
         // si el archivo contiene un error va a tener el # al final
@@ -186,8 +196,58 @@ public class ShowDataPointsFragment extends Fragment {
         dataGraph.setNestedScrollingEnabled(true);
         // Set the horizontal axis title to the string "Intervalo muestreo(seg)"
         dataGraph.getGridLabelRenderer().setHorizontalAxisTitle(" \nIntervalo muestreo(seg)");
-        
+
+        toSaveData = dataP;
+
     }
+
+    void exportDataTxt(){
+        String toSaveTxt = "";
+
+        // divide los datos en 2 partes, la primera es una session de muestreo (formato de arriba), la otra el resto
+        String[] sSplit = toSaveData.split("STOP");
+
+        // separa por ; los valores del muestreo
+        String[] startSplit = sSplit[0].split(";");
+
+        toSaveTxt += "Nombre del agenamiento:\t" + startSplit[1] + "\n";
+
+        // obtiene la fecha formateada yyyy-mm-dd hh:mm:ss.ms
+        String formatDate = startSplit[2].replace("T", "  ");
+        formatDate =  formatDate.substring(0, formatDate.lastIndexOf(":")) + "." + formatDate.substring(formatDate.lastIndexOf(":") + 1);
+        // muestra la fecha
+        toSaveTxt += "Tiempo de inicio:\t \t" + formatDate + "\n";
+
+        String fName = startSplit[1];
+
+        // obtine el tiempo de termino que se encuentra en la sSplit[1] y formatea la fecha yyyy-mm-dd hh:mm:ss.ms
+        formatDate = sSplit[1].substring(sSplit[1].indexOf(";") + 1, sSplit[1].length() - 1).replace("T", "  ");
+        formatDate =  formatDate.substring(0, formatDate.lastIndexOf(":")) + "." + formatDate.substring(formatDate.lastIndexOf(":") + 1);
+        // muestra la fecha
+        toSaveTxt += "Tiempo de Termino:\t" + formatDate + "\n";
+        toSaveTxt += "Intervalo de muestreo:\t" + startSplit[3] + " ms\n";
+
+        toSaveTxt += "Tiempo(Seg)\t";
+        toSaveTxt += "Distancia(" + (startSplit[4])+")\n";
+
+        String[] dats = startSplit[5].replace("\n", "").split("!");
+
+        float intervalo = Integer.parseInt(startSplit[3]) * 0.001f;
+        int muestreoIdx = 0;
+
+        // para cada dato en datoS
+        for (String dat : dats) {
+            // verifica que los datos no sean vacios
+            if (dat.equals("")) {
+                continue;
+            }
+
+            toSaveTxt += (intervalo * muestreoIdx) + "\t \t" + dat + "\n";
+            muestreoIdx++;
+        }
+        ControlCenter.getInstance().saveDataOnStorage(toSaveTxt, fName, dvName);
+    }
+
 
     // Declare a new double to store the amount of data points
     double amountDataX = 1, amountFilteredDataX = 1;
