@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Environment;
 import android.service.controls.Control;
 import android.view.View;
 
@@ -36,6 +37,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -129,6 +131,9 @@ public class MainActivity extends AppCompatActivity {
         return super.getSupportFragmentManager();
     }
 
+    public File getExternalStorage(){
+        return Environment.getExternalStorageDirectory();
+    }
     // method to run a runnable on the UI thread
     public void onUIThread(Runnable toRun){
         runOnUiThread(toRun);
