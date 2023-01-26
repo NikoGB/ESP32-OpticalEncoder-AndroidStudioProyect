@@ -244,7 +244,7 @@ public class ControlCenter {
         return true;
     }
 
-    /*
+    /**
      * funcion que guarda los datos en el almacenamiento externo (SD del telefono)
      * @param data: datos a guardar
      * @param nFile: nombre del archivo
@@ -274,11 +274,11 @@ public class ControlCenter {
         }
     }
 
-    /*
+    /**
      * funcion que guarda los datos en el almacenamiento interno de la app
-     * @param data: datos a guardar
-     * @param nFile: nombre del archivo
-     * @param devName: nombre del dispositivo
+     * @param sInfo: datos a guardar
+     * @param onFile: nombre del archivo
+     * @param append: bool que determina si agregar los datos o sobreescribir
      */
     public void saveData(String sInfo, String onFile, boolean append){
         File t = new File(mainActivity.getFilesDir(), connectionFrag.devName);
@@ -299,7 +299,7 @@ public class ControlCenter {
 
     }
 
-    /*
+    /**
      * funcion que recupera los datos del dispositivo conectado
      * @param fName: nombre del archivo
      */
@@ -307,7 +307,7 @@ public class ControlCenter {
         return getData(fName, connectionFrag.devName);
     }
 
-    /*
+    /**
      * funcion que recupera los datos del dispositivo conectado
      * @param fName: nombre del archivo
      * @param devName: nombre del dispositivo

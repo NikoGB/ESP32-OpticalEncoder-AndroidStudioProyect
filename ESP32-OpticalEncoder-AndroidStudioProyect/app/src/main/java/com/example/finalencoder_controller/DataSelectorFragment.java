@@ -102,8 +102,10 @@ public class DataSelectorFragment extends Fragment {
         }
     }
 
-    // actualiza el tamaño de la lista
-    // @param lv: lista a actualizar
+    /**
+     * actualiza el tamaño de la lista
+     * @param lv: lista a actualizar
+     */
     void updateListHeight(ListView lv){
         View li = lv.getAdapter().getView(0, null, lv);
         li.measure(0,0);

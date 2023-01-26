@@ -172,9 +172,11 @@ public class DataSchedulerFragment extends Fragment {
     }
 
     public boolean isS = false;
-    // funcion para crear la vista de los schedules
-    // @param isSchedules: si es true se creara la vista de schedules, si es false se creara la vista de muestreos
-    // @param devName: nombre del dispositivo
+    /**
+     * funcion para crear la vista de los schedules
+     * @param isSchedules: si es true se creara la vista de schedules, si es false se creara la vista de muestreos
+     * @param devName: nombre del dispositivo
+     */
     void setDataViewFor(boolean isSchedules, String devName){
         isS= isSchedules;
         deviceName = devName;
@@ -189,8 +191,10 @@ public class DataSchedulerFragment extends Fragment {
 
     }
 
-    // funcion para obtener los datos de un muestreo
-    // @param stDate: fecha de inicio del muestreo
+    /**
+     * funcion para obtener los datos de un muestreo
+     * @param stDate: fecha de inicio del muestreo
+     */
     String GetDataPointInfo(String stDate){
         try {
             String dat = ControlCenter.getInstance().getData("data_", deviceName);
@@ -203,8 +207,10 @@ public class DataSchedulerFragment extends Fragment {
         }
     }
 
-    // funcion para obtener los datos de un schedule
-    // @param scName: nombre del schedule
+    /**
+     * funcion para obtener los datos de un schedule
+     * @param scName: nombre del schedule
+     */
     String GetScDataPointInfo(String scName){
         try {
             String dat = ControlCenter.getInstance().getData("data_", deviceName);
@@ -223,8 +229,10 @@ public class DataSchedulerFragment extends Fragment {
     }
 
 
-    // funcion para convertir los datos de muestreo a schedules
-    // @param dataP: datos de muestreo
+    /**
+     * funcion para convertir los datos de muestreo a schedules
+     * @param dataP: datos de muestreo
+     */
     String ConvertPointsToSchedules(String dataP){
         if(Objects.equals(dataP, "")){ return ""; }
 
@@ -297,9 +305,11 @@ public class DataSchedulerFragment extends Fragment {
 
     }
 
-    // funcion para crear todos los schedules
-    // @param sType: tipo de schedule
-    // @param scs: lista de schedules
+    /**
+     * funcion para crear todos los schedules
+     * @param sType: tipo de schedule
+     * @param scs: lista de schedules
+     */
     void CreateAllSchedules(int sType, ScheduleItem[] scs){
         ScheduleItemAdapter toMod = (sType == 1 ? awaitScAdapterListView : finishedAdapterListView);
 
@@ -319,8 +329,10 @@ public class DataSchedulerFragment extends Fragment {
         updateListHeight(lv);
     }
 
-    // funcion para actualizar el tamaño de la lista
-    // @param lv: lista a actualizar
+    /**
+     * funcion para actualizar el tamaño de la lista
+     * @param lv: lista a actualizar
+     */
     void updateListHeight(ListView lv){
         View li = lv.getAdapter().getView(0, null, lv);
         li.measure(0,0);
