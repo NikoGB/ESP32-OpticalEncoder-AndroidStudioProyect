@@ -16,25 +16,21 @@ public class DebuggingConsoleFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
         binding = DebuggingConsoleBinding.inflate(inflater, container, false);
-        // get the debug fragment instance
         ControlCenter.getInstance().debugFrag = this;
 
-        // check if there are any messages to be displayed
+        // si hay mensajes en el log, los muestra
         if(ControlCenter.getInstance().logMessages != ""){
-            // update the console log with the messages
             updateConsoleLog(ControlCenter.getInstance().logMessages, false);
         }
 
-        // set the send button listener
+        // boton para enviar comandos
         binding.debugComsSend.setOnClickListener(view-> {
-            // send the command to the ESP32 and clear the text box
             ControlCenter.getInstance().connectionFrag.sendCommand(String.valueOf(binding.comsSendText.getText()) );
             binding.comsSendText.setText("");
         });
-        // set the scroll view to the bottom
         binding.debugScrollView.fullScroll(View.FOCUS_DOWN);
 
-        // para forzar la vista al ultimo elemento de la consola de debug
+        // desplaza el scroll hasta el final
         binding.debugScrollView.post(new Runnable() {
             @Override
             public void run() {
@@ -44,15 +40,11 @@ public class DebuggingConsoleFragment extends Fragment {
 
         return binding.getRoot();
     }
-    // update the console log with the message received
+    // actualiza el log de la consola
     public void updateConsoleLog(String log, boolean isReceived){
-        // get the current text and add the new message
         String toAdd = binding.comsTextView.getText().toString();
-        // add the ">" if the message is received from the ESP32
         toAdd  = toAdd + (isReceived ? ">" : "") + log+ "\n";
-        // update the text view
         binding.comsTextView.setText(toAdd);
-        // set the scroll view to the bottom
         binding.debugScrollView.fullScroll(View.FOCUS_DOWN);
     }
 
@@ -60,7 +52,6 @@ public class DebuggingConsoleFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
-    // check if the fragment is destroyed
     public boolean isDestroyed(){
         if(binding == null){ return true;
         }else{ return false; }

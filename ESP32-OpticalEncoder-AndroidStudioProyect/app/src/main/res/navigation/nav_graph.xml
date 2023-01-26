@@ -26,6 +26,9 @@
             android:id="@+id/action_ContentMainFragment_to_showDataPointsFragment"
             app:destination="@id/showDataPointsFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_ContentMainFragment_to_aboutFragment"
+            app:destination="@id/aboutFragment" />
     </fragment>
     <fragment
         android:id="@+id/debuggingConsoleFragment"
@@ -88,5 +91,14 @@
             android:id="@+id/action_showDataPointsFragment_to_dataSchedulerFragment"
             app:destination="@id/dataSchedulerFragment"
             app:exitAnim="@anim/nav_default_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.example.finalencoder_controller.aboutFragment"
+        android:label="fragment_about"
+        tools:layout="@layout/fragment_about" >
+        <action
+            android:id="@+id/action_aboutFragment_to_ContentMainFragment"
+            app:destination="@id/ContentMainFragment" />
     </fragment>
 </navigation>

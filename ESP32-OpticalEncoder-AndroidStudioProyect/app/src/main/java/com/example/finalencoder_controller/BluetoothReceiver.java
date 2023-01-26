@@ -8,23 +8,20 @@ import android.bluetooth.BluetoothAdapter;
 public class BluetoothReceiver extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent){
-        // Get the action of the intent
         String action = intent.getAction();
-        // Get the state of the bluetooth
         int state;
-        // Check if the action is the state of the bluetooth
+        // se verifica si el estado del bluetooth cambio
         switch (action){
-            // If the action is the state of the bluetooth changed
+            // si el estado cambio a encendido
             case BluetoothAdapter.ACTION_STATE_CHANGED:
-                // Get the state of the bluetooth
+            // se obtiene el estado actual
                 state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
-                // Check if the bluetooth is on
                 if(state == BluetoothAdapter.STATE_ON){
-                    // Set the bluetooth connected to true
+                    // se actualiza el estado del bluetooth en el control center
                     ControlCenter.getInstance().setBluetoothConnected(true);
                     ControlCenter.getInstance().bluetoothConnected = true;
                 }else{
-                    // Set the bluetooth connected to false
+                    // se actualiza el estado del bluetooth en el control center
                     ControlCenter.getInstance().setBluetoothConnected(false);
                     ControlCenter.getInstance().bluetoothConnected = false;
                 }

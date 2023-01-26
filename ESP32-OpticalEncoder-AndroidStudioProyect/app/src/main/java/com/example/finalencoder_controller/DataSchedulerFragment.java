@@ -35,11 +35,13 @@ public class DataSchedulerFragment extends Fragment {
         binding = FragmentDeviceviewSchedulerBinding.inflate(inflater, container, false);
         ControlCenter.getInstance().dataSchFrag = this;
 
+        // crear el adaptador para la lista de schedules pendientes
         ArrayList<ScheduleItem> scAwItems = new ArrayList<ScheduleItem>();
         awaitScAdapterListView = new ScheduleItemAdapter(getContext(), scAwItems);
         ListView awListView = (ListView) binding.deviceViewAwaitScheduleListView;
         awListView.setAdapter(awaitScAdapterListView);
 
+        // crear el adaptador para la lista de schedules finalizados
         ArrayList<ScheduleItem> scFinItems = new ArrayList<ScheduleItem>();
         finishedAdapterListView = new ScheduleItemAdapter(getContext(), scFinItems);
         ListView finListView = (ListView) binding.deviceViewDueScheduleListView;
@@ -49,12 +51,11 @@ public class DataSchedulerFragment extends Fragment {
             setDataViewFor(getArguments().getBoolean("isSchedules"), getArguments().getString("devName"));
         }
 
-
         return binding.getRoot();
-
     }
 
 
+    // clase para los items de la lista de schedules
     static class ScheduleItem {
         public String scName;
         public DateType stTime, edTime;
@@ -76,6 +77,7 @@ public class DataSchedulerFragment extends Fragment {
 
             public int[] data;
 
+            // constructor para crear un DateType con la fecha actual
             public DateType(String dat){
                 String[] aInfo = dat.split("T");
                 String[] dInfo = aInfo[0].split("/");
@@ -85,16 +87,19 @@ public class DataSchedulerFragment extends Fragment {
                         Integer.parseInt(tInfo[0]), Integer.parseInt(tInfo[1]), Integer.parseInt(tInfo[2]), (tInfo.length < 4 ? 0 : Integer.parseInt(tInfo[3])) };
             }
 
+            // funcion para transformar el DateType a un string
             @Override
             public String toString() {
                 DecimalFormat dF = new DecimalFormat("00");
                 return year() + "/" + dF.format(month()) + "/" + dF.format(day()) + "\n" + dF.format(hour()) + ":" + dF.format(minute()) + ":" + dF.format(second()) + "." + millisecond();
             }
 
+            // funcion para transformar el DateType a un string para parsear
             public  String toParse(){
                 return year() + "/" + month() + "/" + day() + "T" + hour() + ":" + minute() + ":" + second() + ":" + millisecond();
             }
 
+            // funcion para comparar dos DateType
             public int compare(int[] toComp){
                 for(int i = 0; i < data.length; i++){
                     if(data[i] == toComp[i]){ continue;
@@ -106,17 +111,20 @@ public class DataSchedulerFragment extends Fragment {
             }
         }
 
+        // constructor para crear un ScheduleItem con los datos de un schedule
         public ScheduleItem(String scheduleName, String startTime, String endTime, int sT){
             scName = scheduleName; stTime = new DateType(startTime); edTime = new DateType(endTime);
             sType = sT;
         }
 
+        // funcion para transformar el ScheduleItem a un string para enviar al dispositivo (esp32)
         @Override
         public String toString() {
             return  scName + ";" + stTime.toParse() + ";" + edTime.toParse() + ";" + sType;
         }
     }
 
+    // clase para el adaptador de la lista de schedules
     static class ScheduleItemAdapter extends ArrayAdapter<ScheduleItem>{
         public ScheduleItemAdapter(@NonNull Context context, ArrayList<ScheduleItem> schedules) {
             super(context, 0, schedules);
@@ -130,6 +138,7 @@ public class DataSchedulerFragment extends Fragment {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.schedule_list_item_1, parent, false);
             }
 
+            // obtener los elementos de la vista
             TextView tvTStart = (TextView) convertView.findViewById(R.id.schedule_st_data);
             TextView tvTEnd = (TextView) convertView.findViewById(R.id.schedule_ed_data);
             TextView tvScName = (TextView) convertView.findViewById(R.id.schedule_name_data);
@@ -141,6 +150,7 @@ public class DataSchedulerFragment extends Fragment {
 
             final boolean isSchedule = ControlCenter.getInstance().dataSchFrag.isS;
 
+            // si el schedule es de tipo 0 (muestreo) se le agrega un boton para ver los datos de muestreo
             if(schedule.sType == 0){
                 intButt.setOnClickListener(view -> {
                     Bundle bun = new Bundle();
@@ -154,6 +164,7 @@ public class DataSchedulerFragment extends Fragment {
 
                 });
             }else if(schedule.sType == 1){
+                // si el schedule es de tipo 1 (comando) se le agrega un boton para ver el comando
                 intButt.setVisibility(View.INVISIBLE);
             }
             return convertView;
@@ -161,6 +172,9 @@ public class DataSchedulerFragment extends Fragment {
     }
 
     public boolean isS = false;
+    // funcion para crear la vista de los schedules
+    // @param isSchedules: si es true se creara la vista de schedules, si es false se creara la vista de muestreos
+    // @param devName: nombre del dispositivo
     void setDataViewFor(boolean isSchedules, String devName){
         isS= isSchedules;
         deviceName = devName;
@@ -175,6 +189,8 @@ public class DataSchedulerFragment extends Fragment {
 
     }
 
+    // funcion para obtener los datos de un muestreo
+    // @param stDate: fecha de inicio del muestreo
     String GetDataPointInfo(String stDate){
         try {
             String dat = ControlCenter.getInstance().getData("data_", deviceName);
@@ -187,6 +203,8 @@ public class DataSchedulerFragment extends Fragment {
         }
     }
 
+    // funcion para obtener los datos de un schedule
+    // @param scName: nombre del schedule
     String GetScDataPointInfo(String scName){
         try {
             String dat = ControlCenter.getInstance().getData("data_", deviceName);
@@ -205,6 +223,8 @@ public class DataSchedulerFragment extends Fragment {
     }
 
 
+    // funcion para convertir los datos de muestreo a schedules
+    // @param dataP: datos de muestreo
     String ConvertPointsToSchedules(String dataP){
         if(Objects.equals(dataP, "")){ return ""; }
 
@@ -227,27 +247,33 @@ public class DataSchedulerFragment extends Fragment {
         return dataS;
     }
 
+    // funcion para crear los schedules a partir de los datos
     void CreateSchItems(String dataS){
-
+        // si no hay datos, se sale de la funcion
         if(dataS == null || Objects.equals(dataS, "") || !dataS.contains("-")){
             return;
         }
+        // se eliminan los saltos de linea y se separan los schedules
         String aux = dataS.replaceAll("\n", "");
         String[] split = aux.split("-");
 
+        // se crean las listas de schedules
         List<ScheduleItem> awaScheduleItems = new ArrayList<ScheduleItem>();
         List<ScheduleItem> finiScheduleItems = new ArrayList<ScheduleItem>();
 
+        // se obtiene la fecha actual
         Calendar cal = Calendar.getInstance();
         int m = cal.get(Calendar.MONTH) + 1;
         ScheduleItem.DateType actD = new ScheduleItem.DateType(
                 cal.get(Calendar.YEAR)  +"/" + m + "/" + cal.get(Calendar.DAY_OF_MONTH) + "T" +
                         cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE) + ":" + cal.get(Calendar.SECOND) + ":" + cal.get(Calendar.MILLISECOND));
 
+        // se separan los datos de cada schedule
         for (String sc : split) {
             if(sc.equals("")){ continue; }
             String[] sInfo = sc.split(";");
             ScheduleItem toS = new ScheduleItem(sInfo[0], sInfo[1], sInfo[2], 1);
+            // se comprueba si el schedule esta activo o no
             if (toS.edTime.compare(actD.data) >= 0) {
                 awaScheduleItems.add(toS);
             } else {
@@ -256,6 +282,7 @@ public class DataSchedulerFragment extends Fragment {
             }
         }
 
+        // se crean los adapters para los schedules
         if(awaScheduleItems.size() > 0){
             ScheduleItem[] auxArray = new  ScheduleItem[awaScheduleItems.size()];
             auxArray =  awaScheduleItems.toArray(auxArray);
@@ -270,6 +297,9 @@ public class DataSchedulerFragment extends Fragment {
 
     }
 
+    // funcion para crear todos los schedules
+    // @param sType: tipo de schedule
+    // @param scs: lista de schedules
     void CreateAllSchedules(int sType, ScheduleItem[] scs){
         ScheduleItemAdapter toMod = (sType == 1 ? awaitScAdapterListView : finishedAdapterListView);
 
@@ -289,6 +319,8 @@ public class DataSchedulerFragment extends Fragment {
         updateListHeight(lv);
     }
 
+    // funcion para actualizar el tamaño de la lista
+    // @param lv: lista a actualizar
     void updateListHeight(ListView lv){
         View li = lv.getAdapter().getView(0, null, lv);
         li.measure(0,0);

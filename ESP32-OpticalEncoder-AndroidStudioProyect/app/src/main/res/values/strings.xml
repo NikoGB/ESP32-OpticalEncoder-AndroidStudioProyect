@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FInalEncoder_Controller</string>
+    <string name="app_name">Experimento de distancia</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -27,4 +27,8 @@
     <string name="agendar">Agendar</string>
     <string name="agendamiento_1">Agendamiento 1</string>
     <string name="guardados">Guardados</string>
+    <string name="text_credits">Jaime Huenchulao  <a href="https://github.com/NikoGB">github.com/NikoGB</a>\nAlex Tardon \t\t\t<a href="https://github.com/AlexFT257">@github.com/AlexFT257</a></string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

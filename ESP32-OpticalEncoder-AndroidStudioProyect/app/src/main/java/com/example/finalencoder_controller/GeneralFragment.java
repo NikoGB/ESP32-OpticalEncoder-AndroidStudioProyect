@@ -159,12 +159,12 @@ public class GeneralFragment extends Fragment {
         binding.temporizadorButtonStart.setOnClickListener( view -> {
             // si no esta conectado mandar un mensaje solicitando la conexion
             if(!ControlCenter.getInstance().connectedDevice){
-                Toast.makeText(getContext(),"Debes estar conectado para usar esta funcion",Toast.LENGTH_LONG).show();
+                ControlCenter.getInstance().mainActivity.makeSnackB("Debes estar conectado para usar esta funcion");
                 return;
             }
             // si no se ha ingresado una cantidad de tiempo solicitar el ingreso de una
             if(rsTime == null || rsTime.isEmpty() || rsTime.compareTo("0:0:0")==0){
-                Toast.makeText(getContext(),"Debe ingresar la duracion del temporizador (mayor a 00:00.000)",Toast.LENGTH_LONG).show();
+                ControlCenter.getInstance().mainActivity.makeSnackB("Debe ingresar la duracion del temporizador (mayor a 00:00.000)");
                 return;
             }
                 // Envia el commando al ESP32 formato TIMER;mm:ss:ms;
@@ -366,6 +366,44 @@ public class GeneralFragment extends Fragment {
         // set the title of the x axis and the y axis of the data graph view
         dataGraph.getGridLabelRenderer().setHorizontalAxisTitle(" \nIntervalo muestreo(seg)");
         binding.spikesGraphView.getGridLabelRenderer().setVerticalAxisTitle("Distancia(cm)");
+
+        // para el tiempo de muestreo
+//        binding.editTextMuestreo.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//            }
+//        });
+
+        binding.actualizarTiempoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!ControlCenter.getInstance().connectedDevice){
+                    ControlCenter.getInstance().mainActivity.makeSnackB("Debes estar conectado para usar esta funcion");
+                    return;
+                }
+                int tiempoMuestreo = Integer.parseInt(String.valueOf(binding.editTextMuestreo.getText()));
+                if(tiempoMuestreo<100){
+                    ControlCenter.getInstance().mainActivity.makeSnackB("El tiempo de muestreo no puede ser menor a 100 ms");
+                    return;
+                }
+                ControlCenter.getInstance().connectionFrag.sendCommand("CONFIG;TIEMPOMUESTREO;"+tiempoMuestreo+";",()->{},10000);
+            }
+        });
+
+        binding.reiniciarTiempoBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!ControlCenter.getInstance().connectedDevice){
+                    ControlCenter.getInstance().mainActivity.makeSnackB("Debes estar conectado para usar esta funcion");
+                    return;
+                }
+                ControlCenter.getInstance().connectionFrag.sendCommand("RESET;",()->{
+                    binding.editTextMuestreo.setText("");
+                },10000);
+            }
+        });
+
 
 
         return binding.getRoot();

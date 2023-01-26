@@ -18,10 +18,12 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Environment;
+import android.os.storage.StorageManager;
 import android.service.controls.Control;
 import android.view.View;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -53,19 +55,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // The binding object will be used to access UI elements in the layout.
+        // rellena el binding con el layout de la actividad
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        // Set the content view to the layout defined in the binding object.
         setContentView(binding.getRoot());
-        // set the toolbar as the app bar
         setSupportActionBar(binding.toolbar);
         ActionBar actionBar = getSupportActionBar();
-        // add the main activity to the control center
         ControlCenter.getInstance().mainActivity = this;
-        // set the title of the toolbar
         tittle = "Experimento de muestreo";
-        // ocultamos la action bar para tener mas espacio en pantalla
-        //actionBar.hide();
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
         NavController navController = navHostFragment.getNavController();
@@ -86,8 +82,17 @@ public class MainActivity extends AppCompatActivity {
         // ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.BLUETOOTH_CONNECT},100);
         startActivity(enableBtIntent);
 
-        // Add an OnDestinationChangedListener to the NavController to keep track of the current destination
-        // and to update the action bar.
+        // obteniendo permisos de lectura y escritura de archivos
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
+        }
+
+
+        // Se agrega un listener para saber cuando se cambia de fragmento
         navController.addOnDestinationChangedListener(
                 new NavController.OnDestinationChangedListener() {
                     @SuppressLint("RestrictedApi")
@@ -95,20 +100,19 @@ public class MainActivity extends AppCompatActivity {
                     public void onDestinationChanged(@NonNull NavController navController,
                                                      @NonNull NavDestination navDestination,
                                                      @Nullable Bundle bundle) {
-                        // Keep track of the current destination and update the action bar.
+                        // Se obtiene el id del fragmento actual
                         isMain = (R.id.ContentMainFragment == navDestination.getId());
-                        // Get the Action Bar for the activity
+                        // obtiene el action bar de la actividad
                         ActionBar actionBar = getSupportActionBar();
-                        // Invalidate the menu to force a redraw
+                        // Invalida el menu para que se actualice
                         actionBar.invalidateOptionsMenu();
-                        // Set the display options to show the back button if we are not in the main activity
+                        // Si el fragmento actual no es el principal, se muestra el boton de regreso
                         actionBar.setDisplayHomeAsUpEnabled(!isMain);
-                        // If the user is navigating forward, add the title to the stack.
+                        // Si el fragmento actual es el principal, se cambia el titulo del action bar
                         if (isForward) {
                             actionBar.setTitle(tittle);
                         } else {
-                            // If the user is navigating backward, update the action bar title and remove the
-                            // previous title from the stack.
+                            // si no, se elimina el titulo del action bar y se agrega el titulo del fragmento anterior
                             if (isMain) {
                                 prevTitles.clear();
                                 prevTitles.add("Experimento de muestreo");
@@ -122,75 +126,63 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // Returns the FragmentManager for interacting with fragments associated with this activity.
-    // This is the correct way to interact with fragments when using the support library.
-    // @return FragmentManager
+    // metodo para obtener el fragmento actual
     @NonNull
     @Override
     public FragmentManager getSupportFragmentManager() {
         return super.getSupportFragmentManager();
     }
 
+    // metodo para obtener el directorio de almacenamiento externo
     public File getExternalStorage(){
         return Environment.getExternalStorageDirectory();
     }
-    // method to run a runnable on the UI thread
+
+    // metodo para modificar la interfaz de usuario desde un hilo secundario 
     public void onUIThread(Runnable toRun){
         runOnUiThread(toRun);
     }
 
-    // method to navigate to a new fragment
+    // metodo para navegar a un fragmento
+    // @param toID: id del fragmento al que se quiere navegar
+    // @param bundle: datos que se quieren pasar al fragmento
+    // @param tittle: titulo del fragmento
     public void navigateTo(int toID, Bundle bundle, String tittle) {
-        // get the navHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
-        // get the NavController
         NavController navController = navHostFragment.getNavController();
-        // add the current tittle to the back stack
         prevTitles.add(this.tittle);
-        // update the current tittle to the new tittle
         this.tittle = tittle;
-        // set the isForward flag to true
         isForward = true;
-        // navigate to the new fragment
         navController.navigate(toID, bundle);
-        // set the isForward flag to false
         isForward = false;
     }
 
+    // metodo para navegar a un fragmento
+    // @param toID: id del fragmento al que se quiere navegar
+    // @param tittle: titulo del fragmento
     public void navigateTo(int toID, String tittle){
-        // get the navHostFragment
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);
-        // get the NavController
         NavController navController = navHostFragment.getNavController();
-        // add the current tittle to the back stack
         prevTitles.add(this.tittle);
-        // update the current tittle to the new tittle
         this.tittle = tittle;
-
-        // set the isForward flag to true
         isForward = true;
-        // navigate to the new fragment
         navController.navigate(toID);
-        // set the isForward flag to false
         isForward = false;
     }
 
-    // method to create a snackbar with a message
+    // metodo para crear un snack bar
+    // @param snackBarMsg: mensaje que se quiere mostrar en el snack bar
     public void makeSnackB(String snackBarMsg){
         onUIThread( ()-> Snackbar.make(binding.coordinatorLayoutMain, snackBarMsg, Snackbar.LENGTH_LONG).show());
     }
 
-    // TODO: check if the documentation is correct
-    // method to wait for a response from the device
+    // metodo para esperar una respuesta del dispositivo (esp32)
+    // @param state: estado del layout de espera
     public void setOnWaitForResponse(int state){
         onUIThread( ()-> {
-            // set the visibility of the waiting answer layout
             binding.waitingAnswerLayout.setVisibility(state);
-            // set the visibility of the main content
             ControlCenter.getInstance().mainContent.setViewPagTouch(state == View.GONE);
-            // set the enabled state of the navHostFragment
             binding.navHostFragmentContentMain.setEnabled(state == View.GONE);
-
         });
     }
 
@@ -198,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         if(isMain){
             getMenuInflater().inflate(R.menu.menu_main, menu);
             return true;
@@ -211,31 +202,26 @@ public class MainActivity extends AppCompatActivity {
         return super.onPrepareOptionsMenu(menu);
     }
 
+    // modifica el comportamiento de los botones del action bar
+    // @param item: boton del action bar que se presiono
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        // maneja el item del action bar que se presiono
+        // el action bar maneja automaticamente los botones de regreso
+        // siempre y cuando se especifique una actividad padre en AndroidManifest.xml
         if(!isMain){ return false; }
-
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }else if (id == R.id.action_allDevices) {
+        // realiza la accion correspondiente al boton presionado
+        if (id == R.id.action_allDevices) {
             navigateTo(R.id.action_ContentMainFragment_to_dataSelectorFragment, "Dispositivos muestreados");
         }else if (id == R.id.action_about) {
-            return true;
+            navigateTo(R.id.action_ContentMainFragment_to_aboutFragment,"Acerca de");
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    // This code is used to create the navigation bar at the top of the screen
-    // The code is taken from the android studio tutorial and has been modified
-    // to fit this project
-    // The code is used to navigate between the different fragments in the project
+    // metodo para crear el menu de navegacion de la aplicacion
     @Override
     public boolean onSupportNavigateUp() {
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_main);

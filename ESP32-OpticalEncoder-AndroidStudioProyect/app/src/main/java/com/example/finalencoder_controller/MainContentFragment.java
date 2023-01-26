@@ -30,20 +30,20 @@ public class MainContentFragment extends Fragment {
     ViewPager2 mainViewPag;
 
     
-    // 1. Inflate the layout for this fragment
+    // 1. el metodo onCreateView se ejecuta cuando se crea la vista
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
         binding = ContentMainBinding.inflate(inflater, container, false);
 
-        // 2. Get the instance of the Control Center class and set the main content property to this class
+        // 2. el metodo mainContent de la clase ControlCenter se usa para acceder a la vista desde otras clases
         ControlCenter.getInstance().mainContent = this;
         TabLayout tabLayout = binding.mainTabLayout;
         mainViewPag = binding.mainViewPager;
 
-        // 3. Set the adapter of the mainViewPager and disable the user input to avoid the swipe action
+        // 3. se crea el adaptador que se encargara de crear los fragmentos y se le asigna al view pager
         mainViewPag.setAdapter(new FragmentAdapter(ControlCenter.getInstance().mainActivity));
         mainViewPag.setUserInputEnabled(false);
 
-        // 4. Create a tab for each fragment and set the title of each tab with the corresponding fragment name
+        // 4. se crea el tab layout y se le asigna al view pager
         new TabLayoutMediator(tabLayout, mainViewPag, (tab, position) -> {
             tab.setText((position == 0 ? "General" : position == 1 ? "Agendar" : "Conexion"));
         }).attach();
@@ -54,7 +54,7 @@ public class MainContentFragment extends Fragment {
 
 
 
-    // Class that will be used to create the fragments
+    // clase que se encarga de crear los fragmentos
     class FragmentAdapter extends FragmentStateAdapter {
 
         public FragmentAdapter(@NonNull FragmentActivity fragment) {
@@ -64,25 +64,21 @@ public class MainContentFragment extends Fragment {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            // Return the fragment that will be used in the corresponding position
+            // dependiendo de la posicion se crea un fragmento u otro
             switch(position){
                 case 0 :
-                    // If the general fragment is null, create a new instance of the general fragment and return it 
                     if(ControlCenter.getInstance().generalFrag == null){ ControlCenter.getInstance().generalFrag = new GeneralFragment(); }
                     return ControlCenter.getInstance().generalFrag;
 
                 case 1 :
-                    // If the scheduler fragment is null, create a new instance of the scheduler fragment and return it
                     if(ControlCenter.getInstance().schedulerFrag == null){ ControlCenter.getInstance().schedulerFrag = new SchedulerFragment(); }
                     return ControlCenter.getInstance().schedulerFrag;
 
                 case 2 :
-                    // If the connection fragment is null, create a new instance of the connection fragment and return it
                     if(ControlCenter.getInstance().connectionFrag == null){ ControlCenter.getInstance().connectionFrag = new ConnectionFragment(); }
                     return ControlCenter.getInstance().connectionFrag;
 
                 default:
-                    // If the general fragment is null, create a new instance of the general fragment and return it
                     if(ControlCenter.getInstance().generalFrag == null){ ControlCenter.getInstance().generalFrag = new GeneralFragment(); }
                     return ControlCenter.getInstance().generalFrag;
             }
@@ -93,19 +89,19 @@ public class MainContentFragment extends Fragment {
             return 3;
         }
     }
-    // Method that will be used to change the current tab
+
     public  void navigateViewPag(int tab){
         mainViewPag.setCurrentItem(tab);
     }
-    // Method that will be used to enable or disable the swipe action
+
     public void setViewPagTouch(boolean state){
         mainViewPag.setEnabled(state);
     }
-    // on view created method
+
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
-    // on destroy view method to avoid memory leaks
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

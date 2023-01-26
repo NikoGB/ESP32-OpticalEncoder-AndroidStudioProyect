@@ -3,11 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.finalencoder_controller.MainActivity">
 
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="Ajustes"
-        app:showAsAction="never" />
+
     <item
         android:id="@+id/action_allDevices"
         android:orderInCategory="100"

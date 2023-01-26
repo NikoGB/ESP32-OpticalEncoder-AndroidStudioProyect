@@ -129,78 +129,63 @@ public class ShowDataPointsFragment extends Fragment {
             mDataSeries.appendData(new DataPoint(dataGraphLastX, dist), false, 36000);
         }
 
-        // Add the last data point to the data series and set the last x value to the new last x value and set the y value to 0
         mPointDataSeries.appendData(new DataPoint(dataGraphLastX + 1, 0), false, 360000);
-        // Set the draw data points to true and set the data points radius to 6
         mDataSeries.setDrawDataPoints(true);
         mDataSeries.setDataPointsRadius(6);
 
-        // Set the data series to the data graph
         GraphView dataGraph = binding.dataGraphView;
 
-        // Set the data series to the data graph
+        // agrega los datos al grafico
         dataGraph.addSeries(mDataSeries);
         dataGraph.addSeries(mPointDataSeries);
 
-        // Set the viewport to the data graph and set the x axis bounds to manual
+        // define el tamaño de los datos
         dataGraph.getViewport().setXAxisBoundsManual(true);
-        // Set a event listener to the data graph to set the number of horizontal labels to the number of data points
         dataGraph.getViewport().setOnXAxisBoundsChangedListener(new Viewport.OnXAxisBoundsChangedListener() {
             @Override
             public void onXAxisBoundsChanged(double minX, double maxX, Reason reason) {
-            // if the amount of data points is greater than 4 set the number of horizontal labels to 4
             if((amountDataX = maxX - minX) > 4){
                 dataGraph.getGridLabelRenderer().setNumHorizontalLabels(4);
             }else{
-                // Set the number of horizontal labels to the amount of data points
                 dataGraph.getGridLabelRenderer().setNumHorizontalLabels((int)Math.ceil(amountDataX) + 1);
             }
-            // Set the amount of data points to the amount of data points divided by 8
             amountDataX = (int)Math.floor(Math.max(1, amountDataX / 8));
             }
         });
 
-        // Set the viewport to the data graph and set the y axis bounds to manual
+        // define la forma de los datos en el grafico
         mPointDataSeries.setCustomShape(new PointsGraphSeries.CustomShape() {
             @Override
             public void draw(Canvas canvas, Paint paint, float x, float y, DataPointInterface dataPoint) {
-                // Check if the data point is the first data point or if the data point is a multiple of the amount of data points
                 if (((int) dataPoint.getX() % (int) amountDataX) != 0 || dataPoint.getX() == mPointDataSeries.getHighestValueX()) {
                     return;
                 }
-                // Set the paint color to red and set the stroke width to 2 and set the text size to 36
                 paint.setColor(getResources().getColor(android.R.color.holo_red_dark));
                 paint.setStrokeWidth(2);
                 paint.setTextSize(36);
-                // Create a new decimal format to format the value to two decimal places
                 DecimalFormat df = new DecimalFormat("#.##");
-                // Create a new string to store the formatted value and return it
                 String str = df.format(dataPoint.getY());
-                // Draw the text to the canvas and set the x and y position to the data point x and y position and set the paint
                 canvas.drawText(str, x - (18 * (str.length() - 1) - 9), y - 30, paint);
             }
         });
-        // Set the min and max x values to the lowest and highest x values of the data series
+        // define el tamaño del grafico y el tamaño de los datos
         dataGraph.getViewport().setMinX(mDataSeries.getLowestValueX());
         dataGraph.getViewport().setMaxX(mDataSeries.getHighestValueX() - 1);
-        // Scroll to the end of the data series
         dataGraph.getViewport().scrollToEnd();
 
-        // Set the number of horizontal labels to 4 and set the vertical label width to 100
         dataGraph.getGridLabelRenderer().setNumHorizontalLabels(4);
         dataGraph.getGridLabelRenderer().setLabelVerticalWidth(100);
 
-        // Set the scalable and scrollable to true and set the nested scrolling enabled to true
         dataGraph.getViewport().setScalable(true);
         dataGraph.getViewport().setScrollable(true);
         dataGraph.setNestedScrollingEnabled(true);
-        // Set the horizontal axis title to the string "Intervalo muestreo(seg)"
         dataGraph.getGridLabelRenderer().setHorizontalAxisTitle(" \nIntervalo muestreo(seg)");
 
         toSaveData = dataP;
 
     }
 
+    // funcion para exportar los datos a un archivo txt
     void exportDataTxt(){
         String toSaveTxt = "";
 

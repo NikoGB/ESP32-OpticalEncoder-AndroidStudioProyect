@@ -23,61 +23,55 @@ import com.example.finalencoder_controller.databinding.FragmentDataSelectionBind
 
 public class DataSelectorFragment extends Fragment {
 
-    // variables to store de binding and the adapter for the list view
     private FragmentDataSelectionBinding binding;
     DataSelectorFragment.DeviceItemAdapter devicesAdapterListView;
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
         binding = FragmentDataSelectionBinding.inflate(inflater, container, false);
-        // get the files directory and list all the files
+        // obtitene la direccion de la carpeta de archivos
         File t = ControlCenter.getInstance().mainActivity.getFilesDir();
         File[] allF = t.listFiles();
-        // check if there are any files
+        // si hay archivos en la carpeta
         if(allF != null && allF.length > 0){
-            // create the list of devices
+            // crea una lista de dispositivos
             ArrayList<DeviceItem> deviceItems = new ArrayList<DeviceItem>();
-            // add all the files to the list
+            // para cada archivo en la carpeta 
             for(int i = 0; i < allF.length; i++){
+                // si el archivo es un directorio (carpeta) se agrega a la lista, si no se ignora
                 deviceItems.add(new DeviceItem(allF[i].getName(), "no encontrado"));
             }
-            // create the adapter and set it to the list view and update the list view
+            // crea un adaptador para la lista de dispositivos
             devicesAdapterListView = new DeviceItemAdapter(getContext(), deviceItems);
             ListView debListView = (ListView) binding.dataDeviceListView;
             debListView.setAdapter(devicesAdapterListView);
-            // update the list view height to fit all the items
             devicesAdapterListView.notifyDataSetChanged();
+            // actualiza el tamaño de la lista
             updateListHeight(debListView);
         }
         return binding.getRoot();
     }
 
-    // class to store the device name and mac address
+    // clase para almacenar los datos de un dispositivo
     public static class DeviceItem {
-        // variables to store the device name and mac address
         public String dName, dMac;
-        // constructor to create a new device item
         public DeviceItem(String devName, String devMac){
             dName = devName; dMac = devMac;
         }
     }
 
-    // class to create the adapter for the list view
+    // adaptador para la lista de dispositivos
     public class DeviceItemAdapter extends ArrayAdapter<DataSelectorFragment.DeviceItem> {
-        // constructor to create a new adapter
         public DeviceItemAdapter(@NonNull Context context, ArrayList<DataSelectorFragment.DeviceItem> devices) {
             super(context, 0, devices);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent){
-            // get the device item and check if the view is null
             DataSelectorFragment.DeviceItem device = getItem(position);
             if(convertView == null){
-                // inflate the view
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.data_device_list_item_1, parent, false);
             }
-            // get the text views and buttons and set the text 
             TextView tvDName = (TextView) convertView.findViewById(R.id.dataDevice_name);
             TextView tvDMac = (TextView) convertView.findViewById(R.id.dataDevice_mac);
             ImageButton dataButton = (ImageButton) convertView.findViewById(R.id.dataDevice_interactItem_viewData);
@@ -86,44 +80,38 @@ public class DataSelectorFragment extends Fragment {
             tvDName.setText(device.dName);
             tvDMac.setText(device.dMac);
 
-            // set the buttons on click listeners
+            // boton para ver los datos
             dataButton.setOnClickListener(
                     view -> {
-                        // create a bundle to pass the device name and if the data is schedules or not
                         Bundle bun = new Bundle();
                         bun.putBoolean("isSchedules", false);
                         bun.putString("devName", device.dName);
-                        // navigate to the data scheduler fragment and pass the bundle and the title
                         ControlCenter.getInstance().mainActivity.navigateTo(R.id.action_dataSelectorFragment_to_dataSchedulerFragment, bun,"Muestreos realizados");
                     }
             );
+            // boton para ver los agendamientos
             scButton.setOnClickListener(
                     view -> {
-                        // create a bundle to pass the device name and if the data is schedules or not
                         Bundle bun = new Bundle();
                         bun.putBoolean("isSchedules", true);
                         bun.putString("devName", device.dName);
-                        // navigate to the data scheduler fragment and pass the bundle and the title
                         ControlCenter.getInstance().mainActivity.navigateTo(R.id.action_dataSelectorFragment_to_dataSchedulerFragment, bun, "Muestreos agendados");
                     }
             );
-            // return the view
             return convertView;
         }
     }
 
-    // function to update the list view height
+    // actualiza el tamaño de la lista
+    // @param lv: lista a actualizar
     void updateListHeight(ListView lv){
-        // get the first item and measure it
         View li = lv.getAdapter().getView(0, null, lv);
         li.measure(0,0);
-        // set the list view height to fit all the items
         ViewGroup.LayoutParams params = lv.getLayoutParams();
         params.height = (li.getMeasuredHeight() + lv.getDividerHeight()) * (lv.getAdapter().getCount());
         lv.setLayoutParams(params);
         lv.requestLayout();
     }
-
 
 
     @Override
