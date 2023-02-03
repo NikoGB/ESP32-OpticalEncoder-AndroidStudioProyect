@@ -158,6 +158,7 @@ public class ControlCenter {
     // @return: datos recibidos del dispositivo con el formato "START;scheduleNameIfExist;startDate;intervalMs;measureUnit"
     public String getDateCheckedDataPoints(String dataP){
         String read = getData("data_");
+        if(dataP.lastIndexOf("STOP;")< 0){ return ""; }
         int i = read.length() - 1;
         if(i < 0){ return dataP; }
 

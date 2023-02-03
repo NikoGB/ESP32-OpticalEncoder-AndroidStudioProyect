@@ -32,12 +32,10 @@ android {
 }
 
 dependencies {
-
     implementation 'com.github.harry1453:android-bluetooth-serial:v1.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.1.12'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
     implementation 'com.jjoe64:graphview:4.2.2'
-
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'

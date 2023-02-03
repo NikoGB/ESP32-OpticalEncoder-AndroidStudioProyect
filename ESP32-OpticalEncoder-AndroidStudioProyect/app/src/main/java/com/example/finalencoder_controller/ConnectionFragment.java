@@ -231,7 +231,7 @@ public class ConnectionFragment extends Fragment {
                     msW -= 100;
                     String lastR = ControlCenter.getInstance().lastReceivedMsg;
                     // si se recibe respuesta y es diferente a la anterior
-                    if(lastR.charAt(0) != '*' && !Objects.equals(lastR, lastMsg)){
+                    if(lastR.charAt(0) != '*' && lastR.charAt(0) != '!' && !Objects.equals(lastR, lastMsg)){
                         // se elimina el mensaje de espera de respuesta
                         ControlCenter.getInstance().mainActivity.setOnWaitForResponse(View.GONE);
                         if(Objects.equals(lastR, "1")){

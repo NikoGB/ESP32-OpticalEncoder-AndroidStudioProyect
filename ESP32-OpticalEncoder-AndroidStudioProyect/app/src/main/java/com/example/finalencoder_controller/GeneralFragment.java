@@ -297,7 +297,7 @@ public class GeneralFragment extends Fragment {
                     ControlCenter.getInstance().mainActivity.makeSnackB("El tiempo de muestreo no puede ser menor a 100 ms");
                     return;
                 }
-                ControlCenter.getInstance().connectionFrag.sendCommand("CONFIG;TIEMPOMUESTREO;"+tiempoMuestreo+";",()->{},10000);
+                ControlCenter.getInstance().connectionFrag.sendCommand("CONFIG;TIEMPOMUESTREO;"+tiempoMuestreo+";",()->{ ControlCenter.getInstance().scanInterval = tiempoMuestreo; },10000);
             }
         });
 
@@ -311,7 +311,8 @@ public class GeneralFragment extends Fragment {
                 }
                 ControlCenter.getInstance().connectionFrag.sendCommand("RESET;",()->{
                     binding.editTextMuestreo.setText("");
-                },10000);
+                    ControlCenter.getInstance().scanInterval = 100;
+                }  ,10000);
             }
         });
 
