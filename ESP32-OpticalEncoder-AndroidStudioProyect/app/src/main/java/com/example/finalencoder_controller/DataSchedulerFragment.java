@@ -96,7 +96,7 @@ public class DataSchedulerFragment extends Fragment {
 
             // funcion para transformar el DateType a un string para parsear
             public  String toParse(){
-                return year() + "/" + month() + "/" + day() + "T" + hour() + ":" + minute() + ":" + second() + ":" + millisecond();
+                return year() + "/" + month() + "/" + day() + "T" + hour() + ":" + minute() + ":" + second();
             }
 
             // funcion para comparar dos DateType
@@ -198,8 +198,17 @@ public class DataSchedulerFragment extends Fragment {
     String GetDataPointInfo(String stDate){
         try {
             String dat = ControlCenter.getInstance().getData("data_", deviceName);
+            if (dat.equals("")){return "";}
             int i = dat.indexOf(";"+ stDate +";");
-            return dat.substring( dat.lastIndexOf("START", i), dat.indexOf(";", dat.indexOf("STOP", i) + 6) + 1);
+            int j =0;
+            int count=0;
+            ControlCenter.getInstance().mainActivity.makeSnackB("i: "+ i);
+            while ((j=dat.indexOf("START;",j+1))>-1 && j<i){
+                count+=1;
+            }
+
+            dat =dat.substring( dat.lastIndexOf("START", i), dat.indexOf(";", dat.indexOf("STOP", i) + 6) + 1);
+            return dat.substring(0,dat.indexOf(";")+1)+count+dat.substring(dat.indexOf(";",dat.indexOf(";")+1));
         } catch (Exception e){
             e.printStackTrace();
             ControlCenter.getInstance().mainActivity.makeSnackB("Error al obtener los Data Point Info");
@@ -245,7 +254,8 @@ public class DataSchedulerFragment extends Fragment {
             String[] sSplit = pSplit[i].split("STOP");
             String[] auxS = sSplit[0].split(";");
             String auxSch = "";
-
+            // si existe el nombre que continue
+            if(!auxS[1].equals("")){continue;}
             auxSch += (auxS[1].equals("") ? "#"+i : auxS[1]) + ";";
             auxSch += auxS[2] + ";";
             auxSch += sSplit[1].split(";")[1] + "-";

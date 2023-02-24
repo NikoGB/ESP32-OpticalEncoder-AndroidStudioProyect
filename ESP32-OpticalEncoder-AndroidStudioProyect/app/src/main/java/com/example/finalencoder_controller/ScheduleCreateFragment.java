@@ -112,8 +112,8 @@ public class ScheduleCreateFragment extends Fragment {
             ControlCenter.getInstance().mainActivity.makeSnackB("Ingrese un nombre valido");
             return false;
         }else{
-            for(int i = 0; i < nSc.length; i++){
-                if(!Character.isLetter(nSc.charAt(i)){
+            for(int i = 0; i < nSc.length(); i++){
+                if(!Character.isLetter(nSc.charAt(i))){
                     ControlCenter.getInstance().mainActivity.makeSnackB("No se permiten CARACTERES especiales en el NOMBRE");
                     return false;
                 }
