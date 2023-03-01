@@ -203,12 +203,7 @@ public class ShowDataPointsFragment extends Fragment {
         // muestra la fecha
         toSaveTxt += "Tiempo de inicio:\t \t" + formatDate + "\n";
 
-
         String fName = startSplit[1];
-
-        if (fName.isEmpty()){
-
-        }
 
         // obtine el tiempo de termino que se encuentra en la sSplit[1] y formatea la fecha yyyy-mm-dd hh:mm:ss.ms
         formatDate = sSplit[1].substring(sSplit[1].indexOf(";") + 1, sSplit[1].length() - 1).replace("T", "  ");

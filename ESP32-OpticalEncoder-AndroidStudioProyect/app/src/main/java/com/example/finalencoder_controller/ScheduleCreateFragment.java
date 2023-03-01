@@ -111,13 +111,6 @@ public class ScheduleCreateFragment extends Fragment {
         if(Objects.equals(nSc, "")){
             ControlCenter.getInstance().mainActivity.makeSnackB("Ingrese un nombre valido");
             return false;
-        }else{
-            for(int i = 0; i < nSc.length(); i++){
-                if(!Character.isLetter(nSc.charAt(i))){
-                    ControlCenter.getInstance().mainActivity.makeSnackB("No se permiten CARACTERES especiales en el NOMBRE");
-                    return false;
-                }
-            }
         }
 
         scToSave = new SchedulerFragment.ScheduleItem(nSc, stDate + "T" + stTime, edDate + "T" + edTime, 1);
@@ -130,10 +123,8 @@ public class ScheduleCreateFragment extends Fragment {
                 return true;
             }else if(res == -1){ 
                 ControlCenter.getInstance().mainActivity.makeSnackB("El TIEMPO seleccionado ya esta en uso para otro muestreo");
-            }else if(res == -2){ 
+            }else{ 
                 ControlCenter.getInstance().mainActivity.makeSnackB("El NOMBRE seleccionado ya esta en uso para otro muestreo");
-            }else{
-                ControlCenter.getInstance().mainActivity.makeSnackB("El TIEMPO de inicio es anterior a la hora actual real");
             }
 
         }

@@ -76,14 +76,14 @@ public class ControlCenter {
         if(state){
             generalFrag.deviceConnected(name);
 
-            connectionFrag.requestInfo("SCAN;GET;-;",
+            connectionFrag.requestInfo("SCAN;GET;",
                     ()->{ saveData(getDateCheckedDataPoints(lastReceivedMsg), "data_", true);
 
                         connectionFrag.requestInfo("SCHEDULE;GET;",
                                 ()-> saveData(getCheckedCreatedSchedules(lastReceivedMsg), "schedules_", false),
-                                ()-> connectionFrag.disconnectDevice(), 1000000);
+                                ()-> connectionFrag.disconnectDevice(), 100000);
 
-                    },()-> connectionFrag.disconnectDevice(), 1000000);
+                    },()-> connectionFrag.disconnectDevice(), 100000);
 
         }else{
             lastSentMsg = ""; lastReceivedMsg = "";
@@ -95,24 +95,11 @@ public class ControlCenter {
     // @param onSucces: funcion que se ejecuta cuando se termina de guardar los datos
     // @param onFail: funcion que se ejecuta cuando no se puede guardar los datos
     public void askForDataPoints(Runnable onSucces, Runnable onFail){
-        String data = getData("data_");
-        if(data.equals("")){
-            connectionFrag.requestInfo("SCAN;GET;-;",
-                ()->{ saveData(getDateCheckedDataPoints(lastReceivedMsg), "data_", true);
-                    if(onSucces != null){ onSucces.run(); }
-                },
-                onFail, 100000);
-        }else {
-            int startPos = data.indexOf( ";",data.indexOf(";",data.lastIndexOf("START"))+1)+1;
-            String lastDate = data.substring(startPos,data.indexOf(";",startPos));
-
-            connectionFrag.requestInfo("SCAN;GET;"+lastDate+";",
-                    ()->{ saveData(getDateCheckedDataPoints(lastReceivedMsg), "data_", true);
-                        if(onSucces != null){ onSucces.run(); }
-                    },
-                    onFail, 100000);
-        }
-
+        connectionFrag.requestInfo("SCAN;GET;",
+        ()->{ saveData(getDateCheckedDataPoints(lastReceivedMsg), "data_", true);
+        if(onSucces != null){ onSucces.run(); }
+        },
+        onFail, 100000);
     }
 
     // funcion que verifica la accion que esta realizando el dispositivo
@@ -170,11 +157,9 @@ public class ControlCenter {
     // @param data: datos recibidos del dispositivo
     // @return: datos recibidos del dispositivo con el formato "START;scheduleNameIfExist;startDate;intervalMs;measureUnit"
     public String getDateCheckedDataPoints(String dataP){
-//        saveDataOnStorage(dataP,"prueba","iphone");
         String read = getData("data_");
         if(dataP.lastIndexOf("STOP;")< 0){ return ""; }
-
-        int i = read.length() ;
+        int i = read.length() - 1;
         if(i < 0){ return dataP; }
 
         i = read.lastIndexOf("STOP;", i);
@@ -182,24 +167,21 @@ public class ControlCenter {
 
         i = read.indexOf(";", i);
         SchedulerFragment.ScheduleItem.DateType dat = new SchedulerFragment.ScheduleItem.DateType(read.substring(i + 1, read.indexOf(";", i + 1)));
-//        setReceivedMessage("este: "+dat.toParse());
+
         i = 0;
         int j;
         boolean findNew = false;
         while((j = dataP.indexOf("START;", i)) >= 0){
             i = dataP.indexOf(";", dataP.indexOf(";", j) + 1) + 1;
             SchedulerFragment.ScheduleItem.DateType iDat = new SchedulerFragment.ScheduleItem.DateType(dataP.substring(i, dataP.indexOf(";", i)));
-//            setReceivedMessage(iDat.toParse() );
             if(dat.compare(iDat.data) < 0){
-                setReceivedMessage("Fecha: \n" + iDat.toParse()+" "+dat.toParse() + "\n");
-                ControlCenter.getInstance().mainActivity.makeSnackB(dat.toParse()+" "+iDat.toParse());
                 dataP = dataP.substring(j);
                 findNew = true;
                 break;
             }
         }
         if(!findNew){ return ""; }
-        setReceivedMessage("All saved data: \n" + dataP + "\n");
+        setReceivedMessage("All saved data: \n" + read + dataP + "\n");
         
         return dataP;
     }

@@ -1,6 +1,7 @@
 /* 1.- LIBRERIAS Y VARIABLES*/
 // Librarias para RIC DS1307
-#include "RTClib.h"
+#include <RTClib.h>
+#include <Wire.h>
 
 // Librarias para Bluetooth Serial (256 bytes de buffer)
 #include "BluetoothSerial.h"
@@ -13,6 +14,7 @@
 
 BluetoothSerial SerialBT;
 RTC_DS1307 rtc;
+DateTime lastValidDate;
 
 // Variables para el codificador rotativo
 int counter = 0;  // Esta variable aunentará o disminuirá dependiendo de la rotación del codificador
@@ -22,7 +24,7 @@ const float R = 1.905;
 const int N = 1200;
 float distance = 0;
 
-const int BUFFER_SIZE = 256;  // Tamaño del buffer para la comunicacion Bluetooth
+const int BUFFER_SIZE = 4000;  // Tamaño del buffer para la comunicacion Bluetooth
 
 /*
     el formato para las configuraciones es:
@@ -52,22 +54,39 @@ bool isTimer = false;
 // variables para el manejo del loop de on
 bool isOn = false;
 
+// struct Date (){
+//   uint32_t unixTime;
+//   int year;
+//   int month;
+//   int day;
+//   int hour;
+//   int minute;
+//   int second;
+
+
+// }
+
 /* 2.- SETUP*/
 void setup() {
   // asignando valores iniciales a las variables de agendamiento y fecha para evitar errores
   nextSchedule = DateTime(2098, 12, 30, 0, 0, 0);
   endNextSchedule = DateTime(2098, 12, 30, 0, 0, 0);
   Serial.begin(115200);
+  Wire.begin();
 
   if (!rtc.begin()) {
     Serial.println("No se pudo encontrar el RTC");
     Serial.flush();
   }
+
   if (!rtc.isrunning()) {
-    Serial.println("RIC NO se está ejecutando, ¡configurenos la hora!");
-    // Cuando es necesario configurar la hora en un muevo dispositivo, o despues de una perdida de energia,
-    // la siguiente linea establece el RIC en la fecha y hora que se compilo este codigo.
-    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  // Serial.println("RIC NO se está ejecutando, ¡configurenos la hora!");
+  // Cuando es necesario configurar la hora en un muevo dispositivo, o despues de una perdida de energia,
+  // la siguiente linea establece el RIC en la fecha y hora que se compilo este codigo.
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+  lastValidDate = DateTime(F(__DATE__), F(__TIME__));
+  } else{
+    lastValidDate= rtc.now();
   }
 
   // Inicializar tarjeta SD
@@ -162,18 +181,22 @@ void ai1() {
 int checkData(String fileName) {
   Serial.println("Revisando datos");
   File file = SD.open("/" + fileName);
+  // se obtiene el tamaño del archivo para revisar unicamente los ultimos 25 caracteres
+  int fileSize = file.size();
+
+  if (fileSize > 21) {
+    file.seek(fileSize - 26);
+  }
   // almacena el contenido del archivo en una variable
   String fileContent = "";
   while (file.available()) {
     fileContent += (char)file.read();
-    if (fileContent.length() > 20) {
-      fileContent.substring(1);
-    }
   }
   if (fileContent.isEmpty()) {
     return 1;
   }
-  Serial.print(fileContent);
+  Serial.println(fileContent);
+
   file.close();
   int searchPos = 0;
   int errors = 0;
@@ -186,6 +209,7 @@ int checkData(String fileName) {
     errors++;
     return -1;
   }
+
   Serial.println("Revision finalizo");
   return 1;
 }
@@ -225,7 +249,7 @@ void writeFile(fs::FS &fs, const char *path, const char *message) {
 // @param message mensaje a escribir
 // @return void
 void appendFile(fs::FS &fs, const char *path, const char *message) {
-  Serial.printf("Appending to file: %s\n", path);
+  //Serial.printf("Appending to file: %s\n", path);
 
   File file = fs.open(path, FILE_APPEND);
   if (!file) {
@@ -233,7 +257,7 @@ void appendFile(fs::FS &fs, const char *path, const char *message) {
     return;
   }
   if (file.print(message)) {
-    Serial.println("Mensaje adjunto");
+    //Serial.println("Mensaje adjunto");
   } else {
     Serial.println("Adjuntar fallo");
   }
@@ -251,24 +275,25 @@ int readBT(String nFile) {
     return -1;
   }
   int total = 0;
+  char buffer[BUFFER_SIZE];
   while (file.available()) {
-    String chunk = "";
-    int byteRead = 0;
-    while (byteRead < BUFFER_SIZE && file.available()) {
-      chunk += (char)file.read();
-      byteRead++;
-    }
-    total += byteRead;
+
+
+    int byteRead = file.readBytes(buffer, BUFFER_SIZE);
+    String chunk = buffer;
+    // Serial.println(byteRead);
+    chunk = chunk.substring(0, byteRead);
+    // Serial.println(chunk);
     if (nFile.compareTo("schedule.txt")) {
       chunk.replace(',', ';');
       SerialBT.println(chunk);
     } else {
       SerialBT.println(chunk);
     }
-    // Serial.println(chunk);
+    total++;
   }
   if (total == 0) {
-    SerialBT.print("1");
+    SerialBT.println("1");
   }
 
   file.close();
@@ -278,6 +303,80 @@ int readBT(String nFile) {
   delay(100);
   return 1;
 }
+
+int sendData(char *tFecha) {
+  String fecha = tFecha;
+  Serial.println("Enviando datos desde: " + fecha);
+  if (fecha.isEmpty()) {
+    return -1;
+  }
+  File myFile = SD.open("/data.txt");
+  int idx = -1, seekIdx = 0;
+  if (myFile.size() > 1000) {
+    seekIdx = myFile.size() - 1000;
+  }
+
+  char buffer[1100];
+  while (myFile.available()) {
+    if (seekIdx < 0) {
+      seekIdx = 0;
+    }
+    myFile.seek(seekIdx);
+
+    int bytesRead = myFile.readBytes(buffer, 1100);
+    String data = buffer;
+    data = data.substring(0, bytesRead);
+    idx = data.lastIndexOf(";" + fecha + ";");
+
+
+    Serial.println(data);
+    if (idx > -1) {
+      Serial.println(idx);
+
+
+      myFile.seek(myFile.position() - (bytesRead - idx));
+      bytesRead = 0;
+      do {
+
+        idx = 0;
+        bytesRead = myFile.readBytes(buffer, 1100);
+        data = buffer;
+        data = data.substring(0, bytesRead);
+        Serial.println("hola");
+        Serial.println(data);
+      } while ((idx = data.indexOf("START", idx)) < 0 && myFile.available());
+
+
+
+      idx = myFile.position() - (bytesRead - idx);
+      Serial.println(idx);
+
+      break;
+    }
+    seekIdx -= 1000;
+    if (seekIdx == -1000) {
+      break;
+    }
+  }
+  if (idx < 0) {
+    SerialBT.println("*");
+    return -1;
+  }
+  char buffer2[3000];
+  myFile.seek(idx);
+  Serial.println(idx);
+  while (myFile.available()) {
+    int bytesRead = myFile.readBytes(buffer2, 3000);
+    String data = buffer2;
+    data = data.substring(0, bytesRead);
+    SerialBT.println(data);
+    Serial.println(data);
+  }
+  Serial.println("hola3");
+  SerialBT.println("*");
+}
+
+
 
 /* 5.- FUNCIONES DE LA LOGICA DEL ESP32 */
 
@@ -383,7 +482,7 @@ int createAgendamiento(char *message) {
   Serial.println("newEndSchedule: " + getDateString(newEndSchedule));
 
   // compara la fecha y hora de inicio del agendamiento con la fecha y hora de inicio del siguiente agendamiento
-  if (nextSchedule > newSchedule) {
+  if (nextSchedule.unixtime() > newSchedule.unixtime()) {
     // si la fecha y hora de inicio del agendamiento es menor a la fecha y hora de inicio del siguiente agendamiento
     // se asigna la fecha y hora de inicio del agendamiento a la fecha y hora de inicio del siguiente agendamiento
     nextSchedule = newSchedule;
@@ -392,7 +491,7 @@ int createAgendamiento(char *message) {
     endNextSchedule = newEndSchedule;
     Serial.println(getDateString(endNextSchedule));
     // se asigna el nombre del agendamiento a la variable nameSchedule
-    Serial.println("schedule (sc): "+sc);
+    Serial.println("schedule (sc): " + sc);
     nSchedule = sc.substring(0, sc.indexOf(","));
   }
   // se crea un string con el formato "Nombre,FechaInicio,FechaFin-"
@@ -463,9 +562,9 @@ int loadSchedule() {
       Serial.println("newEndSchedule: " + getDateString(newEndSchedule));
 
       // verifica que la fecha de inicio no haya pasado (evita que los agendamientos terminados se ejecuten)
-      if (newSchedule >= rtc.now()) {
+      if (newSchedule.unixtime() >= rtc.now().unixtime()) {
         // compara la fecha y hora de inicio del agendamiento con la fecha y hora de inicio del siguiente agendamiento
-        if (nextSchedule > newSchedule) {
+        if (nextSchedule.unixtime() > newSchedule.unixtime()) {
           // si la fecha y hora de inicio del agendamiento es menor a la fecha y hora de inicio del siguiente agendamiento
           // se asigna la fecha y hora de inicio del agendamiento a la fecha y hora de inicio del siguiente agendamiento
           nextSchedule = newSchedule;
@@ -500,6 +599,7 @@ int on() {
   }
   // Se envia el valor de la distancia al dispositivo conectado por bluetooth con el formato de "!distancia"
   String d = "!" + String(distance, DEC);
+  d = d.substring(0, 5);
   SerialBT.println(d + "*");  // ! el asterisco para que la reciba el mensaje la app
   Serial.println(d);
   // se guarda el valor de la distancia en el archivo "data.txt"
@@ -542,20 +642,27 @@ int deleteSchedule(char *message) {
   char *n = strtok(NULL, ";");
   // si el agendamiento a eliminar es el actual
   if (strcmp(nSchedule.c_str(), n) == 0) {
-    // isOn se asigna el valor de false para que no se ejecute el muestreo
-    isOn = false;
-    // enAgendamiento se asigna el valor de false para que no se termine el muestreo si no se ha iniciado un agendamiento
-    enAgendamiento = false;
-    // se crea un string con el formato "STOP;FechaHoraDeTermino"
-    String dat = "STOP;" + dateNow() + ";";
-    // se guarda el string en el archivo "data.txt"
-    saveToSDCard("data.txt", dat);
-    // se manda el data.txt por bluetooth al terminar el agendamiento
-    // readBT("data.txt");
-    // delay(100);
-    // se carga el siguiente agendamiento
-    loadSchedule();
-    return 1;
+
+    if (isOn) {
+      // isOn se asigna el valor de false para que no se ejecute el muestreo
+      isOn = false;
+      // enAgendamiento se asigna el valor de false para que no se termine el muestreo si no se ha iniciado un agendamiento
+      enAgendamiento = false;
+      // se crea un string con el formato "STOP;FechaHoraDeTermino"
+      String dat = "STOP;" + dateNow() + ";";
+      // se guarda el string en el archivo "data.txt"
+      saveToSDCard("data.txt", dat);
+    }
+    // // se manda el data.txt por bluetooth al terminar el agendamiento
+    // // readBT("data.txt");
+    // // delay(100);
+    // // se carga el siguiente agendamiento
+    // loadSchedule();
+    // return 1;
+    // eliminar el nombre para que no se ejecute y reiniciando las variables del agendamiento
+    nSchedule = "";
+    nextSchedule = DateTime(2098, 12, 30, 0, 0, 0);
+    endNextSchedule = DateTime(2098, 12, 30, 0, 0, 0);
   }
   // se crea un objeto File con el archivo "schedules.txt"
   File file = SD.open("/schedules.txt");
@@ -584,13 +691,45 @@ int deleteSchedule(char *message) {
   SD.remove("/schedules.txt");
   // se renombra el archivo temporal como "schedules.txt"
   SD.rename("/temp.txt", "/schedules.txt");
+  // loadSchedule para que se revisen devuelta los agendamientos
+  loadSchedule();
   // delay por si las dudas
   return 1;
 }
 
+int fallos = 0;
+int total = 0;
+bool fallo = false;
+
+
+
+bool endSchedule, startSchedule;
 /* 6.- LOOP */
 // funcion que admistra el funcionamiento del dispositivo
 void loop() {
+
+  DateTime now = rtc.now();
+
+  uint32_t diff = now.unixtime() - lastValidDate.unixtime();
+  // si la diferencia es > 0 signifca que la fecha actual es mayor y se tiene que teminar el schedule
+  // uint32_t endScheduleDiff = now.unixtime() - endNextSchedule.unixtime();
+
+  Serial.println("last valid: " + getDateString(lastValidDate) + " rtc:" + getDateString(now) + " endSchedule bool: " + String(endSchedule));
+  if (diff < 60 && diff >= 0) {
+    lastValidDate = now;
+  } else {
+    Serial.println("La fecha invalida es: " + getDateString(now));
+    fallos++;
+    rtc.adjust(lastValidDate);
+    now = rtc.now();
+    Serial.println("La fecha fue reajustada a: " + getDateString(now));
+  }
+  if (now.unixtime() >= endNextSchedule.unixtime()) {
+    endSchedule = true;
+  } else {
+    endSchedule = false;
+  }
+
   // si estamos en un temporizador se ejecuta el siguiente código
   if (isTimer) {
     // se llama al on() para encender el muestreo
@@ -605,48 +744,32 @@ void loop() {
       // ! no hace falta guardar el stop porque la app manda un OFF; para terminar el muestreo
     }
   }
-  // se comprueba si el siguiente agendamiento es menor o igual a la fecha y hora actual (se inicia el agendamiento)
-  if (nextSchedule <= rtc.now() && !nSchedule.isEmpty()) {
-    Serial.println("Se empezo el agendamiento: "+nSchedule);
-    Serial.println("con nextSchedule: "+getDateString(nextSchedule));
-    Serial.println("con endNextSchedule: "+getDateString(endNextSchedule));
-
-    // se asigna la fecha y hora de inicio del siguiente agendamiento un valor muy alto para que no se cumpla la condicion
-    nextSchedule = DateTime(2098,12,30,0,0,0); // esto esta de antes, en el if se comprueba si se apaga
-    if (isOn ) {
-      // se crea un string con el formato "STOP;FechaHoraDeTermino"
-      String dat = "STOP;" + dateNow() + ";";
-      // se guarda el string en el archivo "data.txt"
-      saveToSDCard("data.txt", dat);
-      SerialBT.println("sAbort*");
-      delay(3000);
-      // se manda el data.txt por bluetooth al terminar el agendamiento
-      readBT("data.txt");
-      delay(3000);
-    }
-    // se crea un string con el formato "START;Nombre;FechaHoraDeInicio;TiempoDeMuestreo;UnidadDeMedida;"
-    String dat = "START;" + nSchedule + ";" + dateNow() + ";" + String(varTiempoMuestreo, DEC) + ";" + "cm" + ";";
-    // se guarda el string en el archivo "data.txt" y se inicia el muestreo
-    saveToSDCard("data.txt", dat);
-    // se asigna el valor de la variable isOn a true para que se inicie el muestreo
-    isOn = true;
-    // guarda el inicio del agendamiento en data y empieza a tomar la data
-    enAgendamiento = true;
-
-    // se manda un mensaje por bluetooth para indicar que se inicio el agendamiento (no estoy seguro sobre el c_str())
-    SerialBT.println("scheduleStart*");
-    delay(1000);
-  }
-
   // si la variable isOn es true se ejecuta el siguiente código
   if (isOn) {
+    total += 1;
+    // Serial.println("fecha actual (loop):" + getDateString(now));
+
     // se llama a la funcion on() para encender el muestreo
     on();
     // se espera el tiempo de muestreo
     delay(varTiempoMuestreo);
     // se comprueba si la fecha y hora de fin del agendamiento es menor o igual a la fecha y hora actual
     // y si la variable enAgendamiento es true (para que no se termine el muestreo si no se ha iniciado un agendamiento)
-    if (enAgendamiento && endNextSchedule <= rtc.now()) {
+
+
+    Serial.println("Fecha antes de comprobar: " + getDateString(now) + " en unix: " + now.unixtime());
+    if (enAgendamiento && endSchedule) {
+      Serial.println("fecha actual de termino (loop/off):" + getDateString(now) + "en Unix: " + now.unixtime());
+      Serial.println("fecha de termino del agendamiento: " + getDateString(endNextSchedule) + "En Unix: " + endNextSchedule.unixtime());
+      Serial.print("Porcentaje de fallos del rtc: ");
+      Serial.print(fallos);
+      Serial.print("/");
+      Serial.println(total);
+      if (fallo) {
+        Serial.println(" se re ajusto el rtc durante el agendamiento");
+        fallo = false;
+      }
+
       // isOn se asigna el valor de false para que no se ejecute el muestreo
       isOn = false;
       // enAgendamiento se asigna el valor de false para que no se termine el muestreo si no se ha iniciado un agendamiento
@@ -674,6 +797,47 @@ void loop() {
   } else {
     delay(100);
   }
+
+  // si la diferencia es > 0 signifca que la fecha actual es mayor y se tiene que empezar el shedule
+  uint32_t nextScheduleDiff = now.unixtime() - nextSchedule.unixtime();
+  if (now.unixtime() >= nextSchedule.unixtime()) {
+    startSchedule = true;
+  } else {
+    startSchedule = false;
+  }
+  // se comprueba si el siguiente agendamiento es menor o igual a la fecha y hora actual (se inicia el agendamiento)
+  if (startSchedule && !nSchedule.isEmpty()) {
+    Serial.println("Se empezo el agendamiento: " + nSchedule);
+    Serial.println("con nextSchedule: " + getDateString(nextSchedule));
+    Serial.println("con endNextSchedule: " + getDateString(endNextSchedule));
+
+    // se asigna la fecha y hora de inicio del siguiente agendamiento un valor muy alto para que no se cumpla la condicion
+    nextSchedule = DateTime(2098, 12, 30, 0, 0, 0);  // esto esta de antes, en el if se comprueba si se apaga
+    if (isOn) {
+      // se crea un string con el formato "STOP;FechaHoraDeTermino"
+      String dat = "STOP;" + dateNow() + ";";
+      // se guarda el string en el archivo "data.txt"
+      saveToSDCard("data.txt", dat);
+      SerialBT.println("sAbort*");
+      delay(3000);
+      // se manda el data.txt por bluetooth al terminar el agendamiento
+      readBT("data.txt");
+      delay(3000);
+    }
+    // se crea un string con el formato "START;Nombre;FechaHoraDeInicio;TiempoDeMuestreo;UnidadDeMedida;"
+    String dat = "START;" + nSchedule + ";" + dateNow() + ";" + String(varTiempoMuestreo, DEC) + ";" + "cm" + ";";
+    // se guarda el string en el archivo "data.txt" y se inicia el muestreo
+    saveToSDCard("data.txt", dat);
+    // se asigna el valor de la variable isOn a true para que se inicie el muestreo
+    isOn = true;
+    // guarda el inicio del agendamiento en data y empieza a tomar la data
+    enAgendamiento = true;
+
+    // se manda un mensaje por bluetooth para indicar que se inicio el agendamiento (no estoy seguro sobre el c_str())
+    SerialBT.println("scheduleStart*");
+    delay(1000);
+  }
+
 
   // Si se recibe un mensaje por Bluetooth (SerialBT) se ejecuta el siguiente código
   if (SerialBT.available()) {
@@ -704,8 +868,17 @@ void loop() {
       }
     } else if (strcmp(token, "SCAN") == 0) {
       token = strtok(NULL, ";");
-      if (strcmp(token, "GET") == 0) {  // MANDAR DATA.txt
-        readBT("data.txt");
+      if (strcmp(token, "GET") == 0 && !isOn) {  // MANDAR DATA.txt
+        token = strtok(NULL, ";");
+        String t = token;
+        Serial.println("token: " + t);
+        delay(1000);
+        if (strcmp(token, "-") == 0) {
+          readBT("data.txt");
+        } else {
+          sendData(token);
+        }
+
         delay(100);
       }
     } else if (strcmp(token, "SCHEDULE") == 0) {
@@ -718,7 +891,7 @@ void loop() {
       } else if (strcmp(token, "DELETE") == 0) {
         check(deleteSchedule(token));
         delay(100);
-      } else {  // MANDAR SCHEDULES.txt
+      } else if (!isOn) {  // MANDAR SCHEDULES.txt
         readBT("schedules.txt");
         delay(100);
       }
@@ -729,8 +902,9 @@ void loop() {
       isOn = true;
       String dat = "START;;" + dateNow() + ";" + String(varTiempoMuestreo, DEC) + ";" + "cm" + ";";
       saveToSDCard("data.txt", dat);
+      delay(500);
       SerialBT.println("1*");
-      delay(100);
+      delay(500);
     } else if (strcmp(token, "TIMER") == 0) {
       // el formato de encendido en el archivo es START;;TiempoDeMuestreo;UnidadDeMedida;
       check(funcTimer(&message[0]));
@@ -754,6 +928,7 @@ void loop() {
     } else {
       Serial.println("Error en el mensaje");
       SerialBT.print("-1*");  // PUEDE SER PRINTLN
+      // delay(100);
     }
     // Se limpia la variable message
     message = "";

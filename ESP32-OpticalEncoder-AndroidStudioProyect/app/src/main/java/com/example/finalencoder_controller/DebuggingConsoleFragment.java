@@ -44,9 +44,6 @@ public class DebuggingConsoleFragment extends Fragment {
     public void updateConsoleLog(String log, boolean isReceived){
         String toAdd = binding.comsTextView.getText().toString();
         toAdd  = toAdd + (isReceived ? ">" : "") + log+ "\n";
-        if(toAdd.length()>10000) {
-            toAdd = toAdd.substring(toAdd.length() - 10000);
-        }
         binding.comsTextView.setText(toAdd);
         binding.debugScrollView.fullScroll(View.FOCUS_DOWN);
     }

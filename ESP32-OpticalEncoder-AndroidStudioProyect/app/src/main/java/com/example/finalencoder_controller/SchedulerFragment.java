@@ -96,7 +96,7 @@ public class SchedulerFragment extends Fragment {
             // @param toComp: fecha a comparar
             // @return: 0: iguales, 1: mayor, -1: menor
             public int compare(int[] toComp){
-                for(int i = 0; i < data.length - 1; i++){
+                for(int i = 0; i < data.length; i++){
                     if(data[i] == toComp[i]){ 
                         continue;
                     } else if(data[i] > toComp[i]){ 
